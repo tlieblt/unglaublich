@@ -7,17 +7,17 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-2">Anmeldung</legend>
                 <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
+                    {{ form.alias.label(class="form-control-label") }}
 
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                    {% if form.alias.errors %}
+                        {{ form.alias(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
+                            {% for error in form.alias.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
+                        {{ form.alias(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
@@ -69,11 +69,11 @@
 {% endblock content %}
 
 {% block registr %}
-    <div class="pt-2 sign-in">
+    <div class="p-2 sign-in">
         <p class="text-muted">
-            Already Have An Account?
+            Haben Sie schon einen Account?
         <p>
-            <a class="ml-2 sign-in sign-in-btn" href="{{ url_for('login') }}">Sign In</a>
+            <a class="ml-2 sign-in sign-in-btn" href="{{ url_for('login') }}">Einloggen</a>
         </p>
         </p>
     </div>
