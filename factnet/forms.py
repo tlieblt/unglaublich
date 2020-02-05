@@ -37,6 +37,11 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
+class SaveModelForm(FlaskForm):
+    title = StringField('Modellname', validators=[DataRequired()])
+    submit = SubmitField('Speichern')
+
+
 class AddInfoForm(FlaskForm):
     alias = StringField('Accountname', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])

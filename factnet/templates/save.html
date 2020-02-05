@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script>
+    <h1 id="überschrift">Zeit ein Modell anzulegen!</h1>
+    <p id="ueber1">
+    <h5 id="ueber2">Wie wollen sie dieses Modell nennen?</h5>
+        <input class="spaeter infoAblegen content-section ml-2"id="derTitel" type="text" placeholder="Modellname" >
+        <input type="button" id ="ueber3" class="btn btn-outline-success" value="Diagramm erstellen" onclick="unhide()" >
+    </p>
+    <p>
+        <input class="anfang infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" >
+        <input type="button" id ="senderino" class="anfang btn btn-outline-success" value="Ins Diagramm" onclick="addData()" >
+        <input type="button" id ="bauDiagramm" class="anfang btn btn-outline-success" value="Bau Dia" onclick='getDiagramData()' >
+
+    </p>
+   <!--
+    Test ob ausgelesen wird
+    <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->
+
+    <div class="anfang">
+        <div id="mainDiagram" class = "Diagram"></div>
+    </div>
+    <input type="button" id ="savior" class="anfang btn btn-outline-success" value="Diagramm Speichern" onclick="sendData()" >
+    <nav>
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="https://www.wikipedia.de">Klassische Wissensdarstellung</a></li>
+        </ul>
+    </nav>
+<div>
+Hier können Informationen abgelegt werden!
+</div>
+
+<script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
+{% endblock content %}

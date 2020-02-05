@@ -1,5 +1,7 @@
 from factnet import db, login_manager
 from flask_login import UserMixin
+from sqlalchemy.ext import mutable
+from json import dumps, loads
 
 
 @login_manager.user_loader
@@ -20,11 +22,30 @@ class User(db.Model, UserMixin):
         return f"User('{self.alias}','{self.email}','{self.f_o_s}','{self.title}','{self.id}')"
 
 
+class JsonEncodedDict(db.TypeDecorator):
+    """Enables JSON storage by encoding and decoding on the fly."""
+    impl = db.Text
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return '{}'
+        else:
+            return dumps(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return {}
+        else:
+            return loads(value)
+
+
+mutable.MutableDict.associate_with(JsonEncodedDict)
+
 class Models(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.Text, nullable=False)
+    content = db.Column(JsonEncodedDict)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f"Models('{self.title}')"
+        return f"Models('{self.title}','{self.content}','{self.user_id}')"

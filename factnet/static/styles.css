@@ -9,6 +9,10 @@ body {
   border-radius: 10px;
 }
 
+.anfang {
+  visibility:hidden;
+}
+
 h1, h2, h3, h4, h5, h6 {
   color: #444444;
 }
@@ -74,5 +78,5 @@ h1, h2, h3, h4, h5, h6 {
   width:9md;
   height:66vh;
   border:2px solid whitesmoke;
-  background-color: #7be08a;
+  background-color: gray;
 }
