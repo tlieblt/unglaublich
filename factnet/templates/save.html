@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script>
     <h1 id="überschrift">Zeit ein Modell anzulegen!</h1>
@@ -11,7 +14,7 @@
     <p>
         <input class="anfang infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" >
         <input type="button" id ="senderino" class="anfang btn btn-outline-success" value="Ins Diagramm" onclick="addData()" >
-        <input type="button" id ="bauDiagramm" class="anfang btn btn-outline-success" value="Bau Dia" onclick='getDiagramData()' >
+        <input type="button" id ="savior" class="anfang btn btn-outline-success"  value="Diagramm Speichern" onclick='sendData()' >
 
     </p>
    <!--
@@ -19,18 +22,14 @@
     <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->
 
     <div class="anfang">
+        <div id="linkPalette" class=""></div>
         <div id="mainDiagram" class = "Diagram"></div>
     </div>
-    <input type="button" id ="savior" class="anfang btn btn-outline-success" value="Diagramm Speichern" onclick="sendData()" >
-    <nav>
-        <h2>Navigation</h2>
-        <ul>
-            <li><a href="https://www.wikipedia.de">Klassische Wissensdarstellung</a></li>
-        </ul>
-    </nav>
-<div>
-Hier können Informationen abgelegt werden!
-</div>
+    <div id="derInspektor" class="inspector" style="position:relative; bottom:30%;left:-36%;">
+    </div>
 
 <script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
+<script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+<script type="text/javascript" src={{ url_for('static', filename='DragZoom.js') }}> </script>
+
 {% endblock content %}

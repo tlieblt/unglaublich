@@ -22,8 +22,8 @@ class User(db.Model, UserMixin):
         return f"User('{self.alias}','{self.email}','{self.f_o_s}','{self.title}','{self.id}')"
 
 
-class JsonEncodedDict(db.TypeDecorator):
-    """Enables JSON storage by encoding and decoding on the fly."""
+class JsonDict(db.TypeDecorator):
+    #Ermöglicht Abspeichern im JSON Format
     impl = db.Text
 
     def process_bind_param(self, value, dialect):
@@ -39,12 +39,12 @@ class JsonEncodedDict(db.TypeDecorator):
             return loads(value)
 
 
-mutable.MutableDict.associate_with(JsonEncodedDict)
+mutable.MutableDict.associate_with(JsonDict)
 
 class Models(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    content = db.Column(JsonEncodedDict)
+    content = db.Column(JsonDict)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):

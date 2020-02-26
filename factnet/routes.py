@@ -3,7 +3,6 @@ from factnet import app, db, bcrypt
 from factnet.forms import RegistrationForm, LoginForm, AddInfoForm, SaveModelForm
 from factnet.pers import User, Models
 from flask_login import login_user, logout_user, current_user, login_required
-from factnet.js_test import schicker
 import json
 import random
 
@@ -17,6 +16,10 @@ def home():
 @app.route('/main')
 def main():
     return render_template('main.html', title='Start')
+
+@app.route('/dia')
+def dia():
+    return render_template('ffs.html')
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -106,15 +109,15 @@ else:
     return jsonify(data)  # serialize and use JSON headers
 
 '''
-
+#benutzt sicherheitskopie saver html
 @app.route('/hello', methods=['GET', 'POST'])
 def hello():
     if request.method == 'POST':
         print("were postin")
         print(request.get_json())  # parse as JSON
-        return render_template('save.html')
+        return render_template('saver.html')
     else:
-        return render_template('save.html')
+        return render_template('saver.html')
 
 
 @app.route('/save', methods=['GET', 'POST'])
@@ -143,13 +146,15 @@ def save():
 def change_model(model_id):
     model = Models.query.get_or_404(model_id)
     print('bis hierhin')
+    print(model.content)
     if model.creator != current_user:
         flash('Sie haben keine Berechtigung auf dieses Modell zuzugreifen.', 'danger')
         return redirect(url_for('login'))
     elif request.method == 'GET' and request.content_type == 'application/json':
         response = app.response_class(response=model.content, status=200, mimetype='application/json')
-        print(model.content)
+        print(response.data)
         return jsonify(model.content)
+        #return jsonify(model.content)
     elif request.method == 'POST' and request.content_type == 'application/json':
         print(model.content)
         print("json request im post: ")
@@ -158,9 +163,10 @@ def change_model(model_id):
         flash('Änderung gespeichert', 'success')
         db.session.commit()
         print(model.content)
+
         return render_template('saved.html')
     else:
-        return render_template('saved.html')
+        return render_template('saved.html', diagram_name = model.title), 201
 
 
 #mb obsolet
