@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='more.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+
+    <link rel="stylesheet" src={{ url_for('static', filename='DataInspector.css') }}/>
+
+</head>
+<body>
+<h1>DIES HIER SIND NODES</h1>
+<div id="sample">
+  <div id="myDiagramDiv" style="background-color: green; border: solid 1px black; height: 570px;"></div>
+  <p><button id="zoomToFit">Zoom to Fit</button> <button id="centerRoot">Center on root</button></p>
+
+  <div>
+    <div id="myInspectorDiv" class="inspector" style="position:relative; bottom:44%;left:98%;">
+    <div id="myInspectorDiv" class="inspector" style="position:relative; bottom:25%;left:98%;">
+
+    </div>
+  </div>
+</div>
+</body>
+<script> init(); </script>
+</html>

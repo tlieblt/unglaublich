@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script>
+    <h1 id="überschrift">Zeit ein Modell anzulegen!</h1>
+    <h5 id="ueber2">Wie wollen sie dieses Modell nennen?</h5>
+        <input class="spaeter infoAblegen content-section ml-2"id="derTitel" type="text" placeholder="Modellname" >
+        <input type="button" id ="ueber3" class="btn btn-outline-success" value="Diagramm erstellen" onclick="getDiagramData(800)" >
+    </p>
+    <p>
+        <input class="anfang infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" >
+        <input type="button" id ="senderino" class="anfang btn btn-outline-success" value="Ins Diagramm" onclick="addData()" >
+            <input type="button" id ="bauDiagramm" class="anfang btn btn-outline-success" value="Bau Dia" onclick='getDiagramDataCur()' >
+    </p>
+   <!--
+    Test ob ausgelesen wird
+    <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->
+
+    <div> <!--class="anfang"-->
+        <div id="mainDiagram" class = "Diagram"></div>
+        <input type="button" id ="GEÄNDERTVONsavior" class=" btn btn-outline-success" value="Diagramm Speichern" onclick="sendData()" >
+    </div>
+    <span>
+
+    <div id="myInspectorDiv" class="inspector" style="position:relative; bottom:30%;left:98%;">
+    </div>
+    </span>
+    <p id="ueber11">json</p>
+
+    <div id="infobar" class="anfang allow-focus col-md-6 sidebar" style="position:relative; bottom:60%;left:90%;">
+    <div class="container">
+          <div class="panel-group text-center">
+            <div class="panel panel-default content-section m-1">
+              <div class="panel-heading mb-2 ">
+                  <h2>Genaueres</h2>
+                  <div id="accordionisus">
+
+
+
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse card-body" aria-labelledby="headingThree" data-parent="#accordion">
+      <!--div class="card-body"-->
+<div>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong2"> WAS </button>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-content modal-header" role="document">
+                <!--Innere vom Modal-->
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal schmodal</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body">
+                <textarea class="form-control col-xs-12">JA JETZ</textarea> </div> <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+
+        </div>
+    </div></div>      </div>
+    </div>
+
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+    </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="exampleModalLong1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">asdf title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body">
+                <textarea class="form-control col-xs-12">JA JETZ</textarea> </div> <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+        </div>
+    </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                            </div>
+<!--
+<script>$(document).on('click', '.allow-focus .dropdown-menu', function (e) {
+  e.stopPropagation();
+});</script>
+-->
+
+<div>
+Hier können Informationen abgelegt werden!
+</div>
+<div id="spielplatz">
+Hier können Informationen abgelegt werden!
+</div>
+<script type="text/javascript" src={{ url_for('static', filename='saver.js') }}> </script>
+
+
+
+{% endblock content %}
