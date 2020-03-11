@@ -138,7 +138,7 @@ function getID() {
     request.addEventListener('load', function (event) {
         if (request.status >= 200 && request.status < 300) {
             model_id = request.responseText;
-            console.log(model_id)
+            console.log(model_id);
             return model_id;
         } else {
             console.warn(request.statusText, request.responseText);

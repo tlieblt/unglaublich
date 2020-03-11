@@ -1,50 +1,56 @@
 {% extends "base.html" %}
 {% block content %}
+  <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
 
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script>
+    <h1 id="ModelName"> {{ diagram_name }}</h1>
 
         <input class="infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" >
         <input type="button" id ="senderino" class="btn btn-outline-success" value="Ins Diagramm" onclick="addData()" >
-    </p>
-   <!--
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Diagramm Speichern" onclick="sendData()" style="position:relative; left:87%;" >
+
+        <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class=" btn btn-outline-success" value="Suchen">
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Suchen" onclick="suchFunktion()" style="position:relative; left:97%;" >
+
+    <button onclick="suchFunktion()">Search</button>
+
+    <!--
     Test ob ausgelesen wird
     <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->
 
     <div>
-        <div id="mainDiagram" class = "Diagram"></div>
-        <script>
-            document.addEventListener("DOMContentLoaded", function(event) {
-                getDiagramData(); });
-        </script>
-    </div>
-    <input type="button" id ="savior" class=" btn btn-outline-success" value="Diagramm Speichern" onclick="sendData()" >
-    <div class="row">
-  <div class="col-4">
-    <div class="list-group" id="list-tab" role="tablist">
-      <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">Zusätzliche Informationen ablegen</a>
-      <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab" aria-controls="profile">Profile</a>
-      <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="#list-messages" role="tab" aria-controls="messages">Messages</a>
-      <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="#list-settings" role="tab" aria-controls="settings">Settings</a>
-    </div>
-  </div>
-  <div class="col-8">
-    <div class="tab-content" id="nav-tabContent">
-      <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">...</div>
-      <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">...</div>
-      <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">...</div>
-      <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">...</div>
-    </div>
-  </div>
+        <p style="position:absolute; left:-34%; top:11%;">Die Palette ist leider noch </p>
+        <p style="position:absolute; left:-34%;top:14%; ">nicht ganz einsatzbereit!</p>
+
+            <div id="linkPalette" style="position:absolute; bottom:0vh;left:-34%; height:66vh; width:10vw; background-color:red""></div>
+
+
 </div>
-    <nav>
-        <h2>Navigation</h2>
-        <ul>
-            <li><a href="https://www.wikipedia.de">Klassische Wissensdarstellung</a></li>
-        </ul>
-    </nav>
-<div>
+        <div>
+        <div id="mainDiagram" class = "Diagram"></div>
+    </div>
+    <script>
+
+            document.addEventListener("DOMContentLoaded", function() {
+                getDiagramData();
+                //inspectore();
+
+            });
+        </script>
+        <div id="derInspektor" class="inspector" style="position:absolute; bottom:-60%;left:-30%;">
+    </div>
+    </div>
+
+
+<div style="visibility: hidden" id="Zentrum">
 Hier können Informationen abgelegt werden!
 </div>
 
 <script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DragZoom.js') }}> </script>
+
+
+
 {% endblock content %}

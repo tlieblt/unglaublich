@@ -74,9 +74,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .Diagram {
+  position:initial;
   margin-top: 10px;
-  width:9md;
-  height:66vh;
+  width:77vw;
+  height:70vh;
   border:2px solid whitesmoke;
-  background-color: gray;
+  background-color:#30403f;
 }
+
+
+

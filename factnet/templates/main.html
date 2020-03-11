@@ -2,25 +2,161 @@
 {% block content %}
 
     <script type="text/javascript" src="/static/go-debug.js"> </script>
+
     <h1>Willkommen, Zeit Wissen zugänglicher zu machen!</h1>
 
+        <div id="mainDiagram" class = " Diagram" style="background-color:red">         </div>
+
+
+<div id="infobar" class="allow-focus col-md-4 sidebar" style="position:absolute; bottom:30%;left:-38%;">
+    <div class="container">
+          <div class="panel-group text-center">
+            <div class="panel panel-default content-section m-1">
+              <div class="panel-heading mb-2 ">
+                  <h2>Genaueres</h2>
+                  <div id="accordionisus">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0   ">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+        Hier kann noch etwas sinnvolles mit dem Platz angestellt werden        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionisus">
+      <div class="card-body">
+        <textarea class="form-control col-xs-12">Bisschen was beschreiben</textarea>      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Collapsible Group Item #2
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionisus">
+      <div class="card-body">
+        Hier zum Beispiel noch Text abgelegt werden
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+
+
+
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong3"> Ich toggle Modals </button>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Podal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body">
+                <textarea class="form-control col-xs-12">Achtung Textfeld</textarea> </div> <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+        </div>
+    <div id="collapseThree" class="collapse card-body" aria-labelledby="headingThree" data-parent="#accordion">
+      <!--div class="card-body"-->
+<div>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong2"> WAS </button>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-content modal-header" role="document">
+                <!--Innere vom Modal-->
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal schmodal</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span> </button> </div> <div class="modal-body">
+                <textarea class="form-control col-xs-12">JA JETZ</textarea> </div> <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+
+        </div>
+    </div></div>      </div>
+    </div>
+    </div>
+      </h5>
+    </div>
+  </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+    </div>
+</div>
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+    </div>
+    </div>
+       </div>
+    </div>
    <!--
     Test ob ausgelesen wird
     <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->
 
-    <div>
-        <div id="mainDiagram" class = "Diagram">
-        </div>
-    </div>
-          <nav>
-             <h2>Navigation</h2>
-                <ul>
-                    <li><a href="https://www.wikipedia.de">Klassische Wissensdarstellung</a></li>
-                </ul>
-          </nav>
-<div>
-Hier sollen einmal Informationen abgelegt werden!
-</div>
 
-<script type="text/javascript" src={{ url_for('static', filename='work.js') }}> </script>
+    <p id="dieInfo" style="visibility: hidden">
+
+
+   <a style="" href="https://www.wikipedia.de">Klassische Wissensdarstellung</a>
+</p>
+
+    <script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DragZoom.js') }}> </script>
+    <script>
+
+      function getDiagramData(id) {
+          let request = new XMLHttpRequest();
+          request.open("GET", url = `saved/${id}`);
+          request.setRequestHeader("Content-Type", "application/json");
+          request.addEventListener('load', function (event) {
+              if (request.status >= 200 && request.status < 300) {
+                  var model_json = JSON.parse(this.responseText);
+                  console.log('is json: ');
+
+            //Stellt sicher, dass das Diagramm initialisiert wurde
+            if(!neuesDiagramm) { neuesDiagramm = make_dia();
+                console.log("neuesDiagramm");
+                console.log(neuesDiagramm);}
+
+            //läd die Objekttemplates bevor das Modell geladen wird
+            style_dia();
+            neuesDiagramm.model  =   new go.Model.fromJson(model_json);
+                  console.log('Diagramm Data: ');
+                  console.log(model_json);
+
+
+                  console.log(model_json.nodeDataArray[2]);
+                  return model_json;
+              } else {
+                  console.warn(request.statusText, request.responseText);
+                  return {};
+              }
+          });
+          request.send();
+      };
+
+        document.addEventListener("DOMContentLoaded", function() {
+                getDiagramData(222);
+                style_dia();
+            })
+
+
+
+    </script>
+
+
+
 {% endblock content %}
