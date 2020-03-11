@@ -69,6 +69,49 @@ function unhide() {
 //Erstellt aus dem Div Element ein neues Diagramm,
 
 function make_dia() {
+
+
+go.Shape.defineFigureGenerator("Help", function(shape, w, h) {
+  var geo = new go.Geometry();
+  var radius = .5;
+  var cpOffset = KAPPA * .5;
+  var centerx = .5;
+  var centery = .5;
+  var fig = new go.PathFigure((centerx - radius) * w, centery * h, false);
+  geo.add(fig);
+
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, centerx * w, (centery - radius) * h, (centerx - radius) * w, (centery - cpOffset) * h,
+    (centerx - cpOffset) * w, (centery - radius) * h));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, (centerx + radius) * w, centery * h, (centerx + cpOffset) * w, (centery - radius) * h,
+    (centerx + radius) * w, (centery - cpOffset) * h));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, centerx * w, (centery + radius) * h, (centerx + radius) * w, (centery + cpOffset) * h,
+    (centerx + cpOffset) * w, (centery + radius) * h));
+  fig.add(new go.PathSegment(go.PathSegment.Bezier, (centerx - radius) * w, centery * h, (centerx - cpOffset) * w, (centery + radius) * h,
+    (centerx - radius) * w, (centery + cpOffset) * h).close());
+  radius = .05;
+  cpOffset = KAPPA * .05;
+  centerx = .5;
+  centery = .8;
+  var fig2 = new go.PathFigure((centerx - radius) * w, centery * h, false);
+  geo.add(fig2);
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, centerx * w, (centery - radius) * h, (centerx - radius) * w, (centery - cpOffset) * h,
+    (centerx - cpOffset) * w, (centery - radius) * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, (centerx + radius) * w, centery * h, (centerx + cpOffset) * w, (centery - radius) * h,
+    (centerx + radius) * w, (centery - cpOffset) * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, centerx * w, (centery + radius) * h, (centerx + radius) * w, (centery + cpOffset) * h,
+    (centerx + cpOffset) * w, (centery + radius) * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, (centerx - radius) * w, centery * h, (centerx - cpOffset) * w, (centery + radius) * h,
+    (centerx - radius) * w, (centery + cpOffset) * h).close());
+  fig2.add(new go.PathSegment(go.PathSegment.Move, 0.5 * w, 0.7 * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Line, 0.5 * w, 0.5 * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, 0.5 * w, 0.2 * h, 0.75 * w, 0.475 * h, 0.75 * w, 0.225 * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Bezier, 0.3 * w, 0.35 * h, 0.4 * w, 0.2 * h, 0.3 * w, 0.25 * h));
+  return geo;
+});
+
+
+
+
     neuesDiagramm = jo(go.Diagram, "mainDiagram", {
 
         "grid.visible": true,
@@ -82,7 +125,7 @@ function make_dia() {
 //beim Doppelclick in den Hintergrund wird ein neuer Knoten erstellt
             "clickCreatingTool.archetypeNodeData": { hauptInfo: "mehr Info",
                 //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
-                hintergrund:false, vordergrund:true, category:"allesSehen",
+                hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften", schriftgrosseVorne:"bold 48pt Segoe UI sans-serif",
                 info: [
         { 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}]},
 
@@ -549,7 +592,6 @@ function style_dia() {
                         margin: new go.Margin(12,12,24,12),
                         isMultiline:true,
                         width:640,
-                        //overflow: go.TextBlock.OverflowClip,
                     textAlign: "center",
                     editable:true}),
           jo("PanelExpanderButton", "HIA",
@@ -610,7 +652,9 @@ function style_dia() {
 
         jo(go.Shape, "RoundedRectangle",
             {fill:"grey",
-            parameter1:20}
+            parameter1:20,
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+            fromSpot: go.Spot.LeftRightSides,toSpot: go.Spot.TopBottomSides}
             ),
 
 
@@ -633,10 +677,8 @@ function style_dia() {
                     textAlign:"center",
                     minSize:new go.Size(30,60),
                     margin:new go.Margin(-2,0,0,0),
-                    //editable:true,
-                    stretch:go.GraphObject.Horizontal,
-                    click : zentrierAlles
-
+                    editable:true,
+                    stretch:go.GraphObject.Horizontal
                 },
             ),
 
@@ -911,8 +953,156 @@ function style_dia() {
 )));
 
 
+    var helptemplate =
+      jo(go.Node, "Auto",
+        locator(),
+        jo(go.Panel,"Vertical",
+        jo(go.Panel, "Auto",
+                   jo(go.Shape, "Circle",
+
+              { fill:"red"}),
+
+          jo(go.Shape, "Help",
+            {stroke:"white",
+                strokeWidth:24,
+            minSize:new go.Size(300,300),
+                portId: "", toLinkable: true, cursor: "pointer",
+                //fromSpot: go.Spot.LeftRightSides,
+                toSpot: go.Spot.TopBottomSides,
+                click:frageGroesser
+            })),
+            jo(go.Panel, "Auto",
+                new go.Binding("visible").makeTwoWay(),
+                {alignment: new go.Spot(0.5,1,0,10),
+                    name:"Frage"},
+
+            jo(go.Shape, "RoundedRectangle",
+                             //   new go.Binding("visible","visible").makeTwoWay(),
+
+                {maxSize:new go.Size(300,NaN)},
+                {
+                    fill:"red"
+                }),
+                jo(go.TextBlock, "Was ist fragwürdig?",
+                    new go.Binding("text","frage"),
+                    {editable:true,
+                        stroke:"white",
+                        maxSize:new go.Size(280,NaN),
+                        font:"bold 32pt Segoe UI sans-serif",
+                        isMultiline:true,
+                        margin:new go.Margin(20,20,50,20)
+                    })
+            )
+)
+)
+;
+
+
+
 //neuesDiagramm.nodeTemplate =
   var simpletemplate =
+      jo(go.Node, "Auto",
+                    locator(),
+
+                  jo(go.Panel, "Auto",
+                //new go.Binding("location", "vorderLoc", go.Point.parse).makeTwoWay(go.Point.stringify),
+                new go.Binding("visible", "vordergrund"),
+
+                jo(go.Shape,
+                    "RoundedRectangle",
+                    //"FivePoinedStar",
+                    {minSize: new go.Size(300, 250),
+                        maxSize: new go.Size(1030,NaN),
+                        fill: "green",
+                        parameter1:20,
+
+                        margin:10,
+                    portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+                        fromSpot: go.Spot.LeftRightSides,toSpot: go.Spot.TopBottomSides
+
+                    }),
+
+                  jo(go.Panel, "Vertical",
+
+
+
+                      //Textblock in dem der Überbegriff gespeichert wird
+                jo(go.TextBlock,        "Übergriff",
+                    new go.Binding("text", "hauptInfo").makeTwoWay(),
+                    new go.Binding("font","schriftgrosseVorne").makeTwoWay(),
+
+                   // new go.Binding("zOrder"), falls Elemente andere überdecken sollen
+                    {minSize: new go.Size(20, 40),
+                        name: "TEXT",
+                        font:"bold 52pt Segoe UI sans-serif",
+                        click : zentrierAlles,
+
+                        maxSize: new go.Size(800,NaN),
+                        stroke:"white",
+                        editable: false,
+                        margin: new go.Margin(50,50,20,40)},
+
+                ),
+                  jo(go.Panel, "Vertical",
+                      new go.Binding("visible", "hintergrund").makeTwoWay(),
+
+
+                      {name:"restInf",
+                          alignment:go.Spot.Center,
+                          minSize: new go.Size(300,NaN),
+
+                      maxSize: new go.Size(700,NaN)
+                      },
+                      jo(go.TextBlock, "Definition",
+                          //{alignment: new go.Spot(0,0,-4,-12)
+                          {font:"bold 20pt Segoe UI sans-serif",
+                          stroke:"white",
+                              textAlign:"center",
+                          stretch:go.GraphObject.Horizontal},
+),
+
+                      jo(go.TextBlock,
+                          {isMultiline:true,
+                              wrap: go.TextBlock.WrapFit,
+                              background:"black",
+                              stroke:"white",
+                              font:"bold 18pt Segoe UI sans-serif",
+                              editable:true,
+                          stretch:go.GraphObject.Horizontal,
+                              minSize: new go.Size(350,NaN),
+                          textAlign: "center",
+                              margin: new go.Margin(10,20,20,20)},
+                          new go.Binding("text", "restInfo").makeTwoWay()),
+
+                      )
+
+
+
+
+
+                  ),
+                            jo("Button",
+                    { alignment: new go.Spot(1,0), scale:1},
+                    jo(go.Shape, "PlusLine", { width: 20, height: 20 }),
+                    { click: changeCategory }),
+
+                  jo("PanelExpanderButton", "restInf",
+
+                      { alignment: new go.Spot(0,0,-4,-8),
+                      scale:3.5}),
+
+
+
+
+
+
+                )
+)
+
+
+
+
+      var simplybad =
         jo(go.Node, "Auto",
             {
                 selectionObjectName: "TEXT" },
@@ -932,7 +1122,7 @@ function style_dia() {
                 {
                     fill: "transparent",
                     stroke: "transparent",
-                    strokeWidth:53
+                    strokeWidth:13
                 }),
 
 
@@ -955,27 +1145,61 @@ function style_dia() {
 
 
                 jo(go.Panel, "Auto",
+                    {padding:0},
                     new go.Binding("visible", "hintergrund"),
 
+
                     jo(go.Shape, "RoundedRectangle",
-                        {minSize:new go.Size(200,300),
-                        fill:"black"}),
-                        jo(go.TextBlock, "Definition: ",
+                    {   minSize: new go.Size(420,400),
+                        maxSize: new go.Size(730,NaN),
+                        fill: "black",
+                        margin:10,
+                    portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+                    toSpot: go.Spot.LeftRightSides,fromSpot: go.Spot.TopBottomSides
+
+                    }),
+
+
+
+                    jo(go.Panel, "Vertical  ",
+
+
+                    jo(go.TextBlock, "Definition: ",
                             {stroke:"white",
                             font:"bold 22pt Segoe UI sans-serif",
+                            textAlign: "center",
+                            minSize: new go.Size(60,30),
+                            alignment: new go.Spot(0,0,4,20)}
+                        )   ,
 
-                            alignment: new go.Spot(0,0,4,20)},
 
 
-                        ),
-                          jo(go.TextBlock, "etwas Sinnvolles",
-                            {stroke:"white",
+                    jo(go.TextBlock, "etwas Sinnvolles",
+                            new go.Binding("text", "restInfo"),
+                              {stroke:"white",
                             editable:true,
-                            font:"bold 18pt Segoe UI sans-serif"},
-                          {alignment: new go.Spot(0,0.1,4,30)},
+                            isMultiline:true,
+                            width:380,
+                            textAlign: "center",
+                            font:"bold 18pt Segoe UI sans-serif",
+                                  margin:new go.Margin(42,10,10,10),
+                          alignment: new go.Spot(0,0.1,4,2)},
 
-                        )
-                    ,
+                        )  ),
+                    jo(go.Shape, "RoundedRectangle",
+                    {minSize: new go.Size(40, 50),
+                        maxSize: new go.Size(730,NaN),
+                        fill: "black",
+                        margin:10,
+                    portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+                    toSpot: go.Spot.LeftRightSides,fromSpot: go.Spot.TopBottomSides
+
+                    }),
+
+
+
+ //   ),//verti panel zu
+
                 jo("Button",
                     { alignment: new go.Spot(1,0), scale:1},
                     jo(go.Shape, "PlusLine", { width: 20, height: 20 }),
@@ -1066,6 +1290,7 @@ var templateMap = new go.Map();
 templateMap.add("detailed", detailansicht);
 templateMap.add("simple", simpletemplate);
 templateMap.add("allesSehen", allesSehen);
+templateMap.add("helptemplate", helptemplate);
 
 neuesDiagramm.nodeTemplateMap = templateMap;
     //MUSS NOCH FUNKTIONALITÄT EINGEBAUT WERDEN:
@@ -1076,7 +1301,7 @@ neuesDiagramm.nodeTemplateMap = templateMap;
         jo("ContextMenu",
           jo("ContextMenuButton",
             jo(go.TextBlock, "Bigger"),
-            { click: function(e, obj) { changeTextSize(obj, 3); } }),
+            { click: function(e, obj) { changeTextSize(obj, 5); } }),
           jo("ContextMenuButton",
             jo(go.TextBlock, "Smaller"),
             { click: function(e, obj) { changeTextSize(obj, -2); } }),
@@ -1104,6 +1329,37 @@ neuesDiagramm.nodeTemplateMap = templateMap;
             }
           )
         );
+
+                neuesDiagramm.contextMenu =
+    jo("ContextMenu",
+      jo("ContextMenuButton",
+        jo(go.TextBlock, "Undo"),
+        { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
+        new go.Binding("visible", "", function(o) {
+                                          return o.diagram.commandHandler.canUndo();
+                                        }).ofObject()),
+      jo("ContextMenuButton",
+        jo(go.TextBlock, "Redo"),
+        { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
+        new go.Binding("visible", "", function(o) {
+                                          return o.diagram.commandHandler.canRedo();
+                                        }).ofObject()),
+      // no binding, always visible button:
+      jo("ContextMenuButton",
+        jo(go.TextBlock, "Neue Unklarheit"),
+        { click: function(e, obj) {
+          e.diagram.commit(function(d) {
+            var data = {frage:"Frage oder Unklarheit", category:"helptemplate", hauptInfo:"nicht leer", visible:true};
+            d.model.addNodeData(data);
+            part = d.findPartForData(data);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+          }, 'new node');
+        } })
+    );
+
+
+
 
         neuesDiagramm.nodeTemplateMap.get("allesSehen").contextMenu=
             jo("ContextMenu",
@@ -1556,33 +1812,6 @@ function linkDoubleClick(e, obj) {
   }
 
 
-go.Shape.defineFigureGenerator("Repeat", function(shape, w, h) {
-  var geo = new go.Geometry();
-  var fig = new go.PathFigure(w * 0, h * .45, true);
-  geo.add(fig);
-
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .25, h * 0));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .50, h * .45));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .30, h * .45));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .30, h * .90));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .60, h * .90));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .65, h * 1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .20, h * 1));
-  fig.add(new go.PathSegment(go.PathSegment.Line, w * .20, h * .45).close());
-  var fig2 = new go.PathFigure(w * 1, h * .55, true); // is filled in our not
-  geo.add(fig2);
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .75, h * 1));
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .50, h * .55));
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .70, h * .55));
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .70, h * .10));
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .40, h * .10));
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .35, h * 0));
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .80, h * 0));
-  fig2.add(new go.PathSegment(go.PathSegment.Line, w * .80, h * .55).close());
-  return geo;
-});
-
-
 
 
 
@@ -1644,8 +1873,8 @@ go.Shape.defineFigureGenerator("Repeat", function(shape, w, h) {
 
 
 function zentrierAlles(e,obj){
-               neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x+0,e.documentPoint.y+199, 0,0));
-               neuesDiagramm.scale=1;
+               neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x+0,e.documentPoint.y+100, 0,0));
+               neuesDiagramm.scale=0.8;
 
 }
 
@@ -1673,3 +1902,14 @@ function zentrierAlles(e,obj){
                 console.log("hier returnen wir nix " + e +"  num: "+ num);
 
                 return console.log("obj von c eintrag war nicht definiert");}}
+
+
+
+function frageGroesser(e, obj) {
+
+               e.diagram.commit(function(d) {
+                   neuesDiagramm.model.setDataProperty(obj.part.data, "visible", !obj.part.data.visible);
+                   neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x,e.documentPoint.y,0,0));
+
+               })};
+
