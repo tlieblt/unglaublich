@@ -3,32 +3,34 @@
   <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
 
     <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script>
-    <h1 id="ModelName"> {{ diagram_name }}</h1>
+   <!--script-- type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script-->
+        <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
 
-        <input class="infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" >
-        <input type="button" id ="senderino" class="btn btn-outline-success" value="Ins Diagramm" onclick="addData()" >
-        <input type="button" id ="savior" class=" btn btn-outline-success" value="Diagramm Speichern" onclick="sendData()" style="position:relative; left:87%;" >
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
 
-        <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class=" btn btn-outline-success" value="Suchen">
-        <input type="button" id ="savior" class=" btn btn-outline-success" value="Suchen" onclick="suchFunktion()" style="position:relative; left:97%;" >
+    <h3 id="ModelName" style = "margin-left: 2px; margin-top:5%; position:relative;"> {{ diagram_name }}
 
-    <button onclick="suchFunktion()">Search</button>
+        <input class="btn btn-outline-success"id="dieInfo" type="text" placeholder="Neuer Knoten" style="position:relative;margin-left:10px;" >
+        <!--input type="button" id ="senderino" class="btn btn-outline-success" value="neuer Knoten" onclick="addData()" style="position:relative; bottom:-10%;left:52%;"-->
+
+        <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class=" btn btn-outline-success"  placeholder="Suchen" style=" position:relative; margin-left: 10px" autocomplete="off">
+        <!--input type="button" id ="savior" class=" btn btn-outline-success" value="Suchen" onclick="suchFunktion()" style="position:relative; bottom:-10%;left:30%;"-->
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Speichern" onclick="sendData()"style="position:relative; margin-left: 4%;" >
+
+
+        <div id="derInspektor" class="inspector" style="position:relative; margin-left: 10%; margin-top: 0px;
+bottom:-1vh;">
+        </div>
+
+</h3>
 
     <!--
     Test ob ausgelesen wird
     <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->
 
-    <div>
-        <p style="position:absolute; left:-34%; top:11%;">Die Palette ist leider noch </p>
-        <p style="position:absolute; left:-34%;top:14%; ">nicht ganz einsatzbereit!</p>
 
-            <div id="linkPalette" style="position:absolute; bottom:0vh;left:-34%; height:66vh; width:10vw; background-color:red""></div>
-
-
-</div>
         <div>
-        <div id="mainDiagram" class = "Diagram"></div>
+        <div id="mainDiagram" class = "Diagram" style="position:relative"></div>
     </div>
     <script>
 
@@ -38,14 +40,29 @@
 
             });
         </script>
-        <div id="derInspektor" class="inspector" style="position:absolute; bottom:-60%;left:-30%;">
-    </div>
-    </div>
 
 
-<div style="visibility: hidden" id="Zentrum">
-Hier können Informationen abgelegt werden!
-</div>
+
+<script>
+var coll = document.getElementById("inspeg");
+
+  coll.addEventListener("click", function() {
+          var content = document.getElementById("derInspektor");
+    console.log(content);
+
+    if (content.style.visibility === "hidden") {
+      content.style.visibility = "visible";
+
+    } else {
+      content.style.visibility = "hidden";
+    }
+  });
+</script>
+
+
+
+
+    </div>
 
 <script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
     <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>

@@ -70,6 +70,70 @@ function unhide() {
 
 function make_dia() {
 
+    go.Shape.defineFigureGenerator("SpeechBubble", function(shape, w, h) {
+    var param1 = shape ? shape.parameter1 : NaN;
+    if (isNaN(param1) || param1 < 0) param1 = 15;  // default corner
+    param1 = Math.min(param1, w / 3);
+    param1 = Math.min(param1, h / 3);
+
+    var cpOffset = param1 * KAPPA;
+    var bubbleH = h * .8; // leave some room at bottom for pointer
+
+    var geo = new go.Geometry();
+    var fig = new go.PathFigure(param1, 0, true);
+    geo.add(fig);
+    fig.add(new go.PathSegment(go.PathSegment.Line, w - param1, 0));
+    fig.add(new go.PathSegment(go.PathSegment.Bezier, w, param1, w - cpOffset, 0, w, cpOffset));
+    fig.add(new go.PathSegment(go.PathSegment.Line, w, bubbleH - param1));
+    fig.add(new go.PathSegment(go.PathSegment.Bezier, w - param1, bubbleH, w, bubbleH - cpOffset, w - cpOffset, bubbleH));
+    fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, bubbleH));
+    fig.add(new go.PathSegment(go.PathSegment.Line, w * .70, h));
+    fig.add(new go.PathSegment(go.PathSegment.Line, w * .55, bubbleH));
+    fig.add(new go.PathSegment(go.PathSegment.Line, param1, bubbleH));
+    fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, bubbleH - param1, cpOffset, bubbleH, 0, bubbleH - cpOffset));
+    fig.add(new go.PathSegment(go.PathSegment.Line, 0, param1));
+    fig.add(new go.PathSegment(go.PathSegment.Bezier, param1, 0, 0, cpOffset, cpOffset, 0).close());
+    if (cpOffset > 1) {
+    geo.spot1 = new go.Spot(0, 0, cpOffset, cpOffset);
+    geo.spot2 = new go.Spot(1, .8, -cpOffset, -cpOffset);
+    } else {
+    geo.spot1 = go.Spot.TopLeft;
+    geo.spot2 = new go.Spot(1, .8);
+    }
+    return geo;
+    });
+
+
+
+go.Shape.defineFigureGenerator("MultiProcess", function(shape, w, h) {
+  var geo = new go.Geometry();
+  var fig = new go.PathFigure(.1 * w, .1 * h, true);
+  geo.add(fig);
+
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, .1 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .2 * w, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w, 0));
+  fig.add(new go.PathSegment(go.PathSegment.Line, w, .8 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .9 * w, .8 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .9 * w, .9 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .8 * w, .9 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .8 * w, h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, 0, .2 * h));
+  fig.add(new go.PathSegment(go.PathSegment.Line, .1 * w, .2 * h).close());
+  var fig2 = new go.PathFigure(.2 * w, .1 * h, false);
+  geo.add(fig2);
+  fig2.add(new go.PathSegment(go.PathSegment.Line, .9 * w, .1 * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Line, .9 * w, .8 * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Move, .1 * w, .2 * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Line, .8 * w, .2 * h));
+  fig2.add(new go.PathSegment(go.PathSegment.Line, .8 * w, .9 * h));
+  geo.spot1 = new go.Spot(0, .2);
+  geo.spot2 = new go.Spot(.8, 1);
+  return geo;
+});
+
+
 
 go.Shape.defineFigureGenerator("Help", function(shape, w, h) {
   var geo = new go.Geometry();
@@ -112,7 +176,7 @@ go.Shape.defineFigureGenerator("Help", function(shape, w, h) {
 
 var neuerKnoten = { hauptInfo: "mehr Info",
                 //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
-                hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften", schriftgrosseVorne:"bold 48pt Segoe UI sans-serif",
+                hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften",
                 info: []};
         //{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}
 
@@ -134,6 +198,7 @@ var neuerKnoten = { hauptInfo: "mehr Info",
 
         //Eventuell im Html Document unsichtbar den Punkt zwischenspeichern und von "außen" die initialPosition setzen!
         initialPosition: new go.Point(modelCenter[0],modelCenter[1]),
+        scale:1,
 
 
           });
@@ -143,13 +208,29 @@ var neuerKnoten = { hauptInfo: "mehr Info",
             neuesDiagramm.toolManager.mouseMoveTools.insertAt(0, new LinkLabelOnPathDraggingTool());
             //neuesDiagramm.toolManager.mouseMoveTools.insertAt(1, new DragZoomingTool());
             neuesDiagramm.scrollMode = go.Diagram.InfiniteScroll;
-            /*
-//Zentriert ausgewähltes Element
-            neuesDiagramm.addDiagramListener("ChangedSelection", function(e) {
-                //var part = e.subject;
-                //console.log(part);
-                //console.log(neuesDiagramm.lastInput.documentPoint.x);
 
+              neuesDiagramm.toolManager.dragSelectingTool.isPartialInclusion = true;
+              neuesDiagramm.toolManager.dragSelectingTool.box =
+    jo(go.Part,
+      { layerName: "Tool" },
+      jo(go.Shape, "RoundedRectangle",
+        { name: "SHAPE", fill: null, stroke: "white", strokeWidth: 4 })
+    );
+
+//Zentriert ausgewähltes Element
+            neuesDiagramm.addDiagramListener("LinkDrawn", function(e) {
+                var part = e.subject;
+                console.log("wir haben part.data: ");
+
+                neuesDiagramm.startTransaction("gibt Link Farbe");
+                neuesDiagramm.model.setDataProperty(part.data,"color", "green");
+                neuesDiagramm.commitTransaction("gibt Link Farbe");
+                console.log(part.data.color);
+
+
+            });
+
+                /*
                 if(e)
                 {
                     console.log(e);
@@ -200,7 +281,7 @@ neuesDiagramm.addDiagramListener("Modified", function(e) {
     var button = document.getElementById("savior");
     if (button) button.disabled = !neuesDiagramm.isModified;
     var idx = document.title.indexOf("*");
-    setTimeout(sendData, 34000);
+    setTimeout(sendData, 14000);
     if (neuesDiagramm.isModified) {
       if (idx < 0) document.title += "*";
     } else {
@@ -242,9 +323,9 @@ function addData() {
     var toAdd = document.getElementById("dieInfo").value;
     neuesDiagramm.startTransaction("make new node");
 
-                    var neuerKnoten = { hauptInfo: toAdd,
+                    var neuerKnoten = { hauptInfo: toAdd, scale:"1", scaleZu:"1",
                 //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
-                hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften", schriftgrosseVorne:"bold 48pt Segoe UI sans-serif",
+                hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften",
                 info: [{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}]};
         //
 
@@ -506,15 +587,21 @@ function style_dia() {
 
 
 
-         // create a template map for items
+         // Array-Template
 
                 var itemTemplateUber =
             jo(go.Panel, "Auto",
                 {
                     alignment:go.Spot.LeftCenter
                 },
-                jo(go.Shape, "RoundedRectangle", {strokeWidth:11, fill:"transparent",
-                stroke:"green"}),
+                jo(go.Shape, "RoundedRectangle",
+
+                    {strokeWidth:1,
+                        fill:"#929292",
+                stroke:"transparent"
+                    }
+                    ,new go.Binding("stroke", "knotenfarbe").makeTwoWay()
+                    ),
                 jo(go.Panel, "Vertical",
               { margin: 16 ,
               alignment:go.Spot.TopLeft,
@@ -580,9 +667,12 @@ function style_dia() {
                 {alignment:new go.Spot(0.5,0,20,0)},
                 jo(go.Shape, "RoundedRectangle",
                     {fill:"slategray",
+                    margin:20,
                     alignment:go.Spot.Center,
                     margin:new go.Margin(10,20,0,0),
-                    minSize:new go.Size(720,20),
+                    minSize:new go.Size(820,20),
+                    maxSize:new go.Size(1000,NaN),
+
                     //maxSize: new go.Size(700, NaN)
                     }),
 
@@ -590,14 +680,15 @@ function style_dia() {
 //mit Text von Info Array verknüpft
                 jo(go.TextBlock, new go.Binding("text","text").makeTwoWay(),
                     {
-                        font:"30pt Andale Mono serif ",
-                        margin: new go.Margin(12,12,24,12),
+                        font:"33pt Andale Mono serif ",
+                        margin: new go.Margin(32,32,54,32),
                         isMultiline:true,
                         width:640,
                     textAlign: "center",
                     editable:true}),
           jo("PanelExpanderButton", "HIA",
-              {alignment:new go.Spot(1,0.5,-18,0),
+              {alignment:new go.Spot(0.5,1,0,10),
+                  margin:10,
               scale:3})
             ),
                 jo(go.Panel, "Vertical",
@@ -606,7 +697,7 @@ function style_dia() {
                 {
                     alignment:go.Spot.BottomCenter,
                  name:"HIA",
-
+                    visible:false,
                    itemTemplate:
                        jo(go.Panel, "Auto",
                 { margin: 2 },
@@ -614,16 +705,16 @@ function style_dia() {
 
               jo(go.Shape, "RoundedRectangle",
                 { fill: "darkslategray",
-                margin:new go.Margin(0,0,10,10),
+                margin:new go.Margin(10,10,10,10),
 
                 minSize: new go.Size(330,110),
-                maxSize: new go.Size(884, NaN)}),
+                maxSize: new go.Size(1000, NaN)}),
               jo(go.TextBlock, new go.Binding("text", "").makeTwoWay(),
-                { margin: 12 ,
+                { margin: 42 ,
                     overflow: go.TextBlock.OverflowClip,
                     isMultiline:true,
                     width:730,
-                    font:"20pt Andale Mono serif ",
+                    font:"22pt Andale Mono serif ",
 
                     wrap: go.TextBlock.WrapDesiredSize,
                     stroke:"lightgoldenrodyellow",
@@ -644,19 +735,55 @@ function style_dia() {
 
                 ));  // end of itemTemplate
 
+    var faktum =
+    jo(go.Node, "Auto",
+        locator(),
+        jo(go.Panel, "Auto",
+            new go.Binding("visible", "klein").makeTwoWay(),
 
 
 
-     // create a template map for items
-  //var i
+
+            jo(go.Shape, "SpeechBubble", {fill:"white", background:"transparent", visible:true,
+                isPanelMain:true, click:textsicht,
+            minSize: new go.Size(60,36),
+
+            })),
+
+    jo(go.Panel, "Auto",
+        new go.Binding("visible", "expand").makeTwoWay(),
+    jo(go.Shape, "RoundedRectangle",
+        {
+            click:textsicht,
+            maxSize: new go.Size(480,NaN),
+         //   minSize: new go.Size(480,NaN)
+}),
+
+    jo(go.TextBlock,
+        new go.Binding("text").makeTwoWay(),
+        {editable:true,
+        stroke:"white",
+        //font:"10pt",
+        isMultiline:true,
+        margin: 14
+})));
+
+
+
+
+
+     // Detail-Template
     var allesSehen =
 
 
     jo(go.Node, "Auto",
+        //{name:"MEHR"},
         new go.Binding("text", "category"),
+        new go.Binding("scale").makeTwoWay(),
         locator(),
 
         jo(go.Shape, "RoundedRectangle",
+            new go.Binding("fill", "knotenfarbe").makeTwoWay(),
             {fill:"grey",
             strokeWidth:30,
             stroke:"transparent",
@@ -676,6 +803,8 @@ function style_dia() {
 
                    jo(go.TextBlock,
                        new go.Binding("text","hauptInfo").makeTwoWay(),
+                       new go.Binding("background", "knotenfarbe").makeTwoWay(),
+
                 {
                     alignment:go.Spot.TopCenter,
                     background:"green",
@@ -690,10 +819,10 @@ function style_dia() {
                 },
             ),
 
-               jo(go.Shape, "RoundedRectangle",
+               jo(go.Shape, "Rectangle",
                    {fill:"black",
                        stroke:"black",
-                       strokeWidth:16,
+                       strokeWidth:16.8,
                     minSize:new go.Size(30,1),
                     maxSize:new go.Size(NaN,1),
 
@@ -704,9 +833,44 @@ function style_dia() {
 
 
 
-           jo("Button",
+           jo(go.Panel, "Vertical",
+               {padding:0},
+
+
+               jo(  go.Panel, "Vertical",
+                new go.Binding("itemArray", "info").makeTwoWay(),
                 {
-                    alignment:new go.Spot(0,0,16,8),
+                    itemTemplate:itemTemplateUber,
+                    padding:0,
+                    alignment:go.Spot.Left,
+                    defaultAlignment: go.Spot.Left,
+                    margin:50,
+                    //fill:"slategray"
+                }
+
+                ),
+
+               jo("Button",
+                {
+                    alignment:new go.Spot(1,1,-50,-40),
+                  margin: new go.Margin(0, 0, 0, 0),
+                  scale:0.5,
+                    click: machNeuenUntereintrag
+                    },
+                jo(go.Shape, "Rectangle" ,{fill:"slategray", stroke:"slategray"},
+                  {
+                  //    desiredSize: new go.Size(26, 26)
+                  }),
+                jo(go.Shape, "PlusLine",  { alignment:go.Spot.Center,
+                                      strokeWidth:10, stroke:"white"
+})),
+
+
+
+                          jo("Button",
+                {
+                    scale:1.2,
+                    alignment:new go.Spot(0,1,40,-40),
                   margin: new go.Margin(0, 0, 0, 0),
                   click: changeCategory
 
@@ -728,42 +892,20 @@ function style_dia() {
 
                 },
                 jo(go.Shape, "RoundedRectangle",
-                  { desiredSize: new go.Size(26, 26), fill:"green", stroke:"black" })
-              ),
+                    new go.Binding("fill", "knotenfarbe").makeTwoWay(),
+
+                  {
+                      //desiredSize: new go.Size(26, 26),
+                      fill:"green", stroke:"white",
+                  strokeWidth:6})
+              )),
 
 
-           jo(go.Panel, "Vertical",
-               {padding:0},
 
 
-               jo(  go.Panel, "Vertical",
-                new go.Binding("itemArray", "info").makeTwoWay(),
-                {
-                    itemTemplate:itemTemplateUber,
-                    padding:0,
-                    alignment:go.Spot.Left,
-                    defaultAlignment: go.Spot.Left,
-                    margin:50
-                }
-
-                ),
-
-               jo("Button",
-                {
-                    alignment:new go.Spot(1,1,-10,0),
-                  margin: new go.Margin(0, 0, 0, 0),
-                  click: function(e, obj) {
-                        machNeuenUntereintrag(e,obj);
-                  }
-                },
-                jo(go.Shape, "RoundedRectangle" ,{fill:"white"},
-                  { desiredSize: new go.Size(26, 26) }),
-                jo(go.TextBlock, "+",  {scale:2, alignment:go.Spot.Center}),
-
-        )
            ),
         )
-    ));
+    );
 
 
 
@@ -869,7 +1011,7 @@ function style_dia() {
     var node = obj.part;
     if (node) {
       var diagram = node.diagram;
-      neuesDiagramm.startTransaction("changeCategory");
+      diagram.startTransaction("changeCategory");
       var cat = neuesDiagramm.model.getCategoryForNodeData(node.data);
       if (cat === "simple"){
         cat = "allesSehen";
@@ -880,6 +1022,31 @@ function style_dia() {
       diagram.commitTransaction("changeCategory");
     }
   }
+
+
+    function textsicht(e, obj) {
+      let node = obj.part;
+      if (node) {
+          let aktuell = node.data.expand;
+          console.log("aktuell wahrheitswert");
+          console.log(aktuell);
+          neuesDiagramm.startTransaction("einausblenden");
+          neuesDiagramm.model.setDataProperty(node.data, "expand", !aktuell);
+          neuesDiagramm.model.setDataProperty(node.data, "klein", aktuell);
+          if(node.data.klein == false){
+          neuesDiagramm.scale = 1.3;
+          neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x+0,e.documentPoint.y, 0,0));
+          console.log("in if schleife");
+          }
+
+
+          neuesDiagramm.commitTransaction("einausblenden");
+
+          console.log("nach der if schleife");
+          console.log(node.data.klein);
+          console.log(node.data.expand);
+      }
+    };
 
 
 
@@ -901,9 +1068,9 @@ function style_dia() {
                     resegmentable: true,
                     routing: go.Link.Orthogonal,
                     //curve: go.Link.Bezier,
-                        curviness:100,
+                        curviness:0,
                     //routing: go. Link.AvoidsNodes,
-                    corner:10,
+                    corner:100,
                     routing: go.Link.AvoidsNodes,
                     //corner: 220,
                     relinkableFrom: true, relinkableTo: true},
@@ -913,19 +1080,20 @@ function style_dia() {
 
                //der tatsächliche Link
                 jo(go.Shape,
+                    new go.Binding("stroke","color").makeTwoWay(),
+
                     {
-                        opacity: 0.8,
+                        opacity: 0.95,
                         isPanelMain: true,
-                        strokeWidth: 10,
+                        strokeWidth: 42,
                         stroke: "#F5F5F5",
                     }),
                 //die Pfeilspitze
                 jo(go.Shape,
-                    { strokeWidth: 2, toArrow: "NormalArrow", fill: 'green', stroke: 'white', scale: 2}),
+                    { strokeWidth: 2, toArrow: "NormalArrow", fill: 'green', stroke: 'white', scale: 5}),
                 //das Pfeilende
                 jo(go.Shape,
-                    new go.Binding("fill", "linkFarbe").makeTwoWay(),
-                    { strokeWidth: 2, fromArrow: "PentagonArrow", fill: 'white', stroke: 'green', scale: 1.4}),
+                    { strokeWidth: 2, fromArrow: "PentagonArrow", fill: 'white', stroke: 'green', scale: 4}),
 
                 // das Panel in dem sich der Textblock befindet, verschiebbar gemacht und anfangs in der Mitte
                 jo(go.Panel, "Auto",
@@ -937,21 +1105,22 @@ function style_dia() {
                     //  {segmentOrientation: go.Link.OrientUpright}, lässt LinkLabel orthogonal zum Link ausgerichtet sein
                     jo(go.Shape, "RoundedRectangle",
                         {
-                            visible: true
+                            visible: false
                         }),
                 // der eigentliche Text - über SegmentFraction verschiebbar
                     jo(go.Panel, "Auto",
                         jo(go.TextBlock, "Link doppelt klicken \n lässt dieses Textfeld verschwinden!",
                             new go.Binding("text", "description").makeTwoWay(),
                             new go.Binding("segmentFraction").makeTwoWay(),
+                            new go.Binding("visible"),
+
                             {
-                                maxSize:new go.Size(262,NaN),
+                                maxSize:new go.Size(462,NaN),
                                 //Versuch eine dynamische Größe beim Zoomen oder Vergrößern zu realisieren - geht noch nicht
                                 //new go.Size(Math.abs(neuesDiagramm.findNodeForKey(from).dg.x-neuesDiagramm.findNodeForKey(to).dg.x), NaN),
                                 isMultiline: true,
-                                row: 0, column: 0, columnSpan: 5,
-                                font: "bold 10pt Segoe UI sans-serif",
-                                visible: true,
+                                font: "bold 50pt Segoe UI sans-serif",
+                                visible: false,
                                 editable: true,
                                 minSize: new go.Size(10, 16),
                                 background: "#000000",
@@ -973,16 +1142,17 @@ function style_dia() {
               { fill:"red",
               portId: "",
                toLinkable: true,
-              toSpot:go.Spot.TopSide}),
+              toSpot:go.Spot.TopSide,
+              click:zentrierAlles}),
 
           jo(go.Shape, "Help",
             {stroke:"white",
-                strokeWidth:28,
+                strokeWidth:20,
             minSize:new go.Size(300,300),
 
                 //fromSpot: go.Spot.LeftRightSides,
                //toSpot: go.Spot.TopBottomSides,
-                click:frageGroesser
+                click:frageEinAusblenden
             })),
             jo(go.Panel, "Auto",
                 new go.Binding("visible").makeTwoWay(),
@@ -991,13 +1161,13 @@ function style_dia() {
 
             jo(go.Shape, "RoundedRectangle",
                              //   new go.Binding("visible","visible").makeTwoWay(),
-
+                new go.Binding("fill","color").makeTwoWay(),
                 {maxSize:new go.Size(300,NaN)},
                 {
                     fill:"red"
                 }),
                 jo(go.TextBlock, "Was ist fragwürdig?",
-                    new go.Binding("text","frage"),
+                    new go.Binding("text","frage").makeTwoWay(),
                     {editable:true,
                         stroke:"white",
                         maxSize:new go.Size(280,NaN),
@@ -1015,6 +1185,7 @@ function style_dia() {
 //neuesDiagramm.nodeTemplate =
   var simpletemplate =
       jo(go.Node, "Auto",
+                    new go.Binding("scale","scaleZu").makeTwoWay(),
                     locator(),
 
                   jo(go.Panel, "Auto",
@@ -1024,14 +1195,16 @@ function style_dia() {
                 jo(go.Shape,
                     "RoundedRectangle",
                     //"FivePoinedStar",
+                    new go.Binding("fill", "knotenfarbe").makeTwoWay(),
+
                     {minSize: new go.Size(300, 250),
-                        maxSize: new go.Size(1030,NaN),
+                        maxSize: new go.Size(1200,NaN),
                         fill: "green",
                         parameter1:20,
 
                         margin:10,
                     portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
-                        //fromSpot: go.Spot.LeftRightSides,toSpot: go.Spot.TopBottomSides
+                        fromSpot: go.Spot.LeftRightSides,toSpot: go.Spot.TopBottomSides
 
                     }),
 
@@ -1042,20 +1215,18 @@ function style_dia() {
                       //Textblock in dem der Überbegriff gespeichert wird
                 jo(go.TextBlock,        "Übergriff",
                     new go.Binding("text", "hauptInfo").makeTwoWay(),
-                    new go.Binding("font","schriftgrosseVorne").makeTwoWay(),
+                    //new go.Binding("font","schriftgrosseVorne").makeTwoWay(),
 
                    // new go.Binding("zOrder"), falls Elemente andere überdecken sollen
                     {minSize: new go.Size(20, 40),
                         name: "TEXT",
                         font:"bold 99pt Segoe UI sans-serif",
-
-
                         click : zentrierAlles,
 
-                        maxSize: new go.Size(800,NaN),
+                        maxSize: new go.Size(1200,NaN),
                         stroke:"white",
                         editable: false,
-                        margin: new go.Margin(50,50,20,40)},
+                        margin: new go.Margin(10,20,20,60)},
 
                 ),
                   jo(go.Panel, "Vertical",
@@ -1066,7 +1237,7 @@ function style_dia() {
                           alignment:go.Spot.Center,
                           minSize: new go.Size(300,NaN),
 
-                      maxSize: new go.Size(700,NaN)
+                      maxSize: new go.Size(1000,NaN)
                       },
                       jo(go.TextBlock, "Definition",
                           //{alignment: new go.Spot(0,0,-4,-12)
@@ -1084,7 +1255,7 @@ function style_dia() {
                               font:"bold 18pt Segoe UI sans-serif",
                               editable:true,
                           stretch:go.GraphObject.Horizontal,
-                              minSize: new go.Size(350,NaN),
+                              minSize: new go.Size(550,NaN),
                           textAlign: "center",
                               margin: new go.Margin(10,20,20,20)},
                           new go.Binding("text", "restInfo").makeTwoWay()),
@@ -1097,13 +1268,14 @@ function style_dia() {
 
                   ),
                             jo("Button",
-                    { alignment: new go.Spot(1,0), scale:1},
-                    jo(go.Shape, "PlusLine", { width: 20, height: 20 }),
+                    { alignment: new go.Spot(1,1)},
+                    jo(go.Shape, "MultiProcess", { fill:"white",
+                    scale:0.5}),
                     { click: changeCategory }),
 
                   jo("PanelExpanderButton", "restInf",
 
-                      { alignment: new go.Spot(0,0,-4,-8),
+                      { alignment: new go.Spot(0, 0.5,-10,10),
                       scale:3.5}),
 
 
@@ -1255,7 +1427,7 @@ function style_dia() {
                 //Textblock in dem der Überbegriff gespeichert wird
                 jo(go.TextBlock,        "Übergriff",
                     new go.Binding("text", "hauptInfo").makeTwoWay(),
-                    new go.Binding("font","schriftgrosseVorne").makeTwoWay(),
+                   // new go.Binding("font","schriftgrosseVorne").makeTwoWay(),
 
                    // new go.Binding("zOrder"), falls Elemente andere überdecken sollen
                     {minSize: new go.Size(20, 40),
@@ -1302,7 +1474,7 @@ function style_dia() {
             ));
 
 var templateMap = new go.Map();
-templateMap.add("detailed", detailansicht);
+templateMap.add("kommentar", faktum);
 templateMap.add("simple", simpletemplate);
 templateMap.add("allesSehen", allesSehen);
 templateMap.add("helptemplate", helptemplate);
@@ -1316,10 +1488,10 @@ neuesDiagramm.nodeTemplateMap = templateMap;
         jo("ContextMenu",
           jo("ContextMenuButton",
             jo(go.TextBlock, "Bigger"),
-            { click: function(e, obj) { changeTextSize(obj, 5); } }),
+            { click: function(e, obj) { newSizeChange(obj, 1.14); } }),
           jo("ContextMenuButton",
             jo(go.TextBlock, "Smaller"),
-            { click: function(e, obj) { changeTextSize(obj, -2); } }),
+            { click: function(e, obj) { newSizeChange(obj, 0.9); } }),
           jo("ContextMenuButton",
             jo(go.TextBlock, "Bold/Normal"),
             { click: function(e, obj) { toggleTextWeight(obj); } }),
@@ -1344,7 +1516,17 @@ neuesDiagramm.nodeTemplateMap = templateMap;
             }
           )
         );
+//Links
+                neuesDiagramm.linkTemplate.contextMenu=
+        jo("ContextMenu",
+          jo("ContextMenuButton",
+            jo(go.TextBlock, "Farbe"),
+            { click: function(e, obj) {
+            // was sinnvolles    changeTextSize(obj, 5);
+            } }))   ;
 
+
+              //Hintergrund
                 neuesDiagramm.contextMenu =
     jo("ContextMenu",
       jo("ContextMenuButton",
@@ -1372,13 +1554,27 @@ neuesDiagramm.nodeTemplateMap = templateMap;
           }, 'new node');
         } }),
 
+
+                jo("ContextMenuButton",
+            jo(go.TextBlock, "Neuer Kommentar"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = {  category:"kommentar",text:"Ergänzend:",expand:false, klein: true};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten');}}),
+
+
         jo("ContextMenuButton",
             jo(go.TextBlock, "Neue Node"),
             {click: function(e,obj){
             e.diagram.commit(function(d) {
-                var neuerKnoten = { hauptInfo: "mehr Info",
+                var neuerKnoten = { knotenfarbe: "green", hauptInfo: "mehr Info", scale:"1.0",scaleZu:"1.0",
                 //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
-                hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften", schriftgrosseVorne:"bold 48pt Segoe UI sans-serif",
+                hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften",
                 info: [{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}]};
         //
             d.model.addNodeData(neuerKnoten);
@@ -1395,10 +1591,10 @@ neuesDiagramm.nodeTemplateMap = templateMap;
             jo("ContextMenu",
               jo("ContextMenuButton",
                 jo(go.TextBlock, "Bigger"),
-                { click: function(e, obj) { newchange(obj, 3); } }),
+                { click: function(e, obj) { newSizeChange(obj, 1.11); } }),
               jo("ContextMenuButton",
                 jo(go.TextBlock, "Smaller"),
-                { click: function(e, obj) { changeTextSize(obj, -2); } }),
+                { click: function(e, obj) { newSizeChange(obj, 0.92); } }),
               jo("ContextMenuButton",
                 jo(go.TextBlock, "Bold/Normal"),
                 { click: function(e, obj) { toggleTextWeight(obj); } }),
@@ -1511,16 +1707,18 @@ function linkDoubleClick(e, obj) {
           showSize: 4,
           // when multipleSelection is true, when showAllProperties is true it takes the union of properties
           // otherwise it takes the intersection of properties
-          showAllProperties: true,
+          //showAllProperties: false,
           // uncomment this line to only inspect the named properties below instead of all properties on each object:
-          // includesOwnProperties: false,
+          includesOwnProperties: false,
           properties: {
               //Key sollte unveränderbar bleiben
-              "key": { readOnly: true, show: Inspector.showIfPresent },
+            // "key": { readOnly: true, show: Inspector.showIfPresent },
             //TODO: Color Picker soll hier noch angezeigt werden!
               "color": { show: Inspector.showIfPresent, type: 'color' },
+              "knotenfarbe": { show: Inspector.showIfPresent, type: 'color' },
+
             // Comments and LinkComments are not in any node or link data (yet), so we add them here:
-            "Comments": { show: Inspector.showIfNode },
+           // "Comments": { show: Inspector.showIfNode },
            // "LinkComments": { show: Inspector.showIfLink },
 
               //Kann später für Gruppenfunktion gebraucht werden
@@ -1550,12 +1748,54 @@ function linkDoubleClick(e, obj) {
         ];
       }
 
-    function newchange(obj, sz) {
+    function newSizeChange( obj, sz) {
     var node = obj.part;
 
-    console.log("node: ");
-    console.log(node.scale);
-    if (node.scale < 22) {
+    console.log("node.scale");
+    console.log(node.data.scaleZu);
+    if (node.data.scale ){
+
+        neuesDiagramm.startTransaction("Change Text Size");
+        if(node.data.category == "allesSehen") {
+            let neuScale = parseFloat(node.data.scale) * sz;
+            if (node.data.scale > 22) {
+                alert("Maximalgröße erreicht");
+                node.data.scale = 22.0
+            }
+            ;
+            neuScale = neuScale.toString();
+            console.log(node.data.scale);
+
+
+        neuesDiagramm.model.setDataProperty(node.data, "scale", neuScale);
+
+
+        }
+        else if (node.data.category == "simple") {
+
+            let neuScale = parseFloat(node.data.scaleZu) * sz;
+
+            if (node.data.scaleZu > 22) {
+                alert("Maximalgröße erreicht");
+                node.data.scaleZu = 22.0
+            }
+            ;
+
+            neuesDiagramm.model.setDataProperty(node.data, "scaleZu", neuScale);
+
+
+        }
+        neuesDiagramm.commitTransaction("Change Text Size");
+
+    }
+
+
+    }
+
+
+
+        /*
+
         node.diagram.startTransaction("Change Scale");
         let itemz = node.adornedPart.findObject("MEHR").scale+0.4;
         console.log("scale < 22");
@@ -1567,7 +1807,7 @@ function linkDoubleClick(e, obj) {
     console.log(node.adornedPart.Hb); }
     node.adornedPart.Bh.hb.category="simple";
     }
-
+*/
 
 
       //Funktion um die Textgröße mit dem Contextmanager ändern zu können
@@ -1966,12 +2206,11 @@ function zentrierAlles(e,obj){
 
 
 
-function frageGroesser(e, obj) {
+function frageEinAusblenden(e, obj) {
 
                e.diagram.commit(function(d) {
                    neuesDiagramm.model.setDataProperty(obj.part.data, "visible", !obj.part.data.visible);
-                   neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x,e.documentPoint.y+240,0,0));
-                   neuesDiagramm.scale = 1;
+
 
                })};
 

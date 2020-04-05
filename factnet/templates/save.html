@@ -12,9 +12,13 @@
         <input type="button" id ="ueber3" class="btn btn-outline-success" value="Diagramm erstellen" onclick="unhide()" >
     </p>
     <p>
-        <input class="anfang infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" >
-        <input type="button" id ="senderino" class="anfang btn btn-outline-success" value="Ins Diagramm" onclick="addData()" >
-        <input type="button" id ="savior" class="anfang btn btn-outline-success"  value="Diagramm Speichern" onclick='sendData()' >
+        <input style="visibility: hidden"></input>
+        <input class="anfang infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" style= "position:absolute; bottom:-40%;left:76%;"  >
+        <input type="button" id ="senderino" class="anfang btn btn-outline-success" value="Ins Diagramm" onclick="addData()" style= "position:absolute; bottom:-40%;left:106%;" >
+        <input type="button" id ="savior" class="anfang btn btn-outline-success"  value="Diagramm Speichern" onclick='sendData()'  style= "position:absolute; bottom:-40%;left:33%;" >
+                <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class=" btn btn-outline-success" value="Suchen" style= "position:absolute; bottom:-40%;left:-22%;">
+
+            <input type="button" id ="savior" class=" btn btn-outline-success" value="Suchen" onclick="suchFunktion()" style= "  position:absolute; bottom:-40%;left:8%;">
 
     </p>
    <!--
@@ -23,9 +27,9 @@
 
     <div class="anfang">
         <div id="linkPalette" class=""></div>
-        <div id="mainDiagram" class = "Diagram"></div>
+        <div id="mainDiagram" style="margin-top: 0px;position:absolute;top:160%;left:-26%;width:90vw;height:82vh;border:2px solid whitesmoke;background-color:#30403f;"></div>
     </div>
-    <div id="derInspektor" class="inspector" style="position:relative; bottom:30%;left:-36%;">
+    <div id="derInspektor" class="inspector" style="position:absolute; bottom:-500%;left:138%; width:0vh;">
     </div>
 
 <script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
