@@ -2,8 +2,8 @@
 Änderungen zu 8.0:
 HTML-Aufbau verändert   
   
-Bug beim Einklappen von gruppierten Graphobjekten wenn dafür ein Binding für die Scale existiert,
-jetzt werden vor dem Minimieren alle Gruppenobjekte zu einer "leeren" Template und beim Maximieren wieder in ihr altes Layout überführt - außerdem sind jetzt alle Objekte bis auf Gruppen mit Rechtsklick größenveränderlich.  
+GoJS stürzt beim Einklappen von gruppierten Graphobjekten ab, wenn ein Binding für die Scale existiert.
+Jetzt werden vor dem Minimieren alle Gruppenobjekte zu einer "leeren" Template und beim Maximieren wieder in ihr altes Layout überführt - außerdem sind jetzt alle Objekte bis auf Gruppen mit Rechtsklick größenveränderlich.  
   
   
 Die aktuellen Abhängigkeiten sind:
