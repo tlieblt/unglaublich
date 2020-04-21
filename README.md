@@ -1,8 +1,37 @@
 # unglaublich
-Änderungen:
-Neues Knotenlayout Notiz um frei Text irgendwo hinzufügen zu können  
+Änderungen zu 8.0:
 HTML-Aufbau verändert   
-Link- und Knotenfarbe individualisierbar gemacht  
-Login ist immer noch required - in Zukunft ist ein Fix denkbar indem nicht eingeloggte User Diagramme   aufrufen, aber nicht bearbeiten können  
-Bug: Der Inhalt aller per Doppelklick hinzugefügten Knoten haben sich gleichzeitig geändert, da hierfür ein Knotenprototyp hinterlegt wird, auf dessen Daten alle davon gemachten "Kopien" Zugriff haben (nach einmaligen Speichern werden sie unabhängige Dateien).   
-Dies ist eine eingebaute Funktion, Doppelklickfunktion wurde deaktiviert.
+  
+Bug beim Einklappen von gruppierten Graphobjekten wenn dafür ein Binding für die Scale existiert,
+jetzt werden vor dem Minimieren alle Gruppenobjekte zu einer "leeren" Template und beim Maximieren wieder in ihr altes Layout überführt - außerdem sind jetzt alle Objekte bis auf Gruppen mit Rechtsklick größenveränderlich.  
+  
+  
+Die aktuellen Abhängigkeiten sind:
+ 
+ Click	7.0	 
+Flask	1.1.1	 
+Flask-Bcrypt	0.7.1	 
+Flask-Login	0.4.1	 
+Flask-SQLAlchemy	2.4.1	 
+Flask-WTF	0.14.2	 
+Jinja2	2.10.3	 
+MarkupSafe	1.1.1	 
+SQLAlchemy	1.3.12	 
+WTForms	2.2.1	 
+Werkzeug	0.16.0	 
+bcrypt	3.1.7	 
+cffi	1.13.2	 
+cycler	0.10.0	 
+decorator	4.4.1	 
+itsdangerous	1.1.0	 
+kiwisolver	1.1.0	 
+matplotlib	3.1.2	 
+numpy	1.18.0	 
+pip	19.3.1	 
+pycparser	2.19	 
+pyparsing	2.4.6	 
+python-dateutil	2.8.1	 
+setuptools	41.2.0	 
+six	1.13.0	 
+validators	0.14.1
+
