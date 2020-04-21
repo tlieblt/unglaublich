@@ -114,6 +114,7 @@ function make_dia() {
     if(e.Ra == "GeometryReshaping") {
        neuesDiagramm.model.startTransaction("adornment");
        neuesDiagramm.toolManager.resizingTool.maxSize = new go.Size(100000,100000);
+       neuesDiagramm.toolManager.resizingTool.minSize = new go.Size(1200,1200);
 
             neuesDiagramm.toolManager.resizingTool.handleArchetype =
     jo(go.Panel, "Auto",
@@ -1677,18 +1678,17 @@ jo(go.Panel, "Auto",
         jo(go.Shape, "RoundedRectangle",
             new go.Binding("fill", "knotenfarbe").makeTwoWay(),
             {fill:"grey",
-                isPanelMain:true,
+            isPanelMain:true,
 
-
-                toSpot: go.Spot.NotBottomSide,fromSpot: go.Spot.AllSides,
+            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+            toSpot: go.Spot.NotBottomSide,fromSpot: go.Spot.AllSides,
 
 
             strokeWidth:30,
             stroke:"transparent",
-                maxSize:new go.Size(1111,NaN),
+            maxSize:new go.Size(1111,NaN),
             parameter1:20,
-            portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
-                            portId:"",
+
 
             alignment: new go.Spot(0.5,1,0,-500)}
             ),
@@ -1939,7 +1939,7 @@ var grouptemp =
             selectionAdorned: true, selectionObjectName: "SHAPE",
             selectionAdornmentTemplate:  // custom selection adornment: a blue rectangle
               jo(go.Adornment, "Auto",
-                jo(go.Shape, { stroke: "dodgerblue", fill: null }),
+                jo(go.Shape, { stroke: "dodgerblue", strokeWidth:10, fill:null}),
                 jo(go.Placeholder, { margin: -1 }))
           },
           { resizable: true, resizeObjectName: "SHAPE" },
@@ -1988,13 +1988,17 @@ var grouptemp =
 
        jo(go.Panel, "Auto",
         jo(go.Shape, "RoundedRectangle",
-            {fill:"white"}),
+            new go.Binding("fill","knotenfarbe").makeTwoWay(),
+            {fill:"white",
+                portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
+            toSpot: go.Spot.NotBottomSide,fromSpot: go.Spot.NotBottomSide,
+}),
             jo(go.TextBlock, "Ein Gruppenname",
                 new go.Binding("text").makeTwoWay(),
                 new go.Binding("visible").makeTwoWay(),
         {
             minSize:new go.Size(120,NaN),
-            maxSize:new go.Size(1200,NaN),
+            maxSize:new go.Size(1400,NaN),
             editable:true,
             visible:true,
         scale:2,
@@ -2114,11 +2118,7 @@ click:function(e,obj){
                 margin:40,
             minSize:new go.Size(1000,1000),
             maxSize:new go.Size(NaN,NaN),
-                portId:"",
-                toLinkable:true,
-                fromLinkable:true,
-                toSpot:go.Spot.NotTopSide,
-                fromSpot:go.Spot.NotTopSide,
+
             opacity:0.5})
  ,
         jo(go.Placeholder,    // represents the area of all member parts,
@@ -2715,7 +2715,6 @@ function linkDoubleClick(e, obj) {
           properties: {
               //Key sollte unveränderbar bleiben
             // "key": { readOnly: true, show: Inspector.showIfPresent },
-            //TODO: Color Picker soll hier noch angezeigt werden!
               "color": { show: Inspector.showIfPresent, type: 'color' },
               "knotenfarbe": { show: Inspector.showIfPresent, type: 'color' },
               "textfarbe": { show: Inspector.showIfPresent, type: 'color' },
@@ -2742,7 +2741,7 @@ function linkDoubleClick(e, obj) {
 
 
 }
-//Eine Funktion um Zugriff auf die Location der node zu haben
+//ZweiFunktionen um das Binding der Objektdaten zu vereinfachen
  function locator() {
         return [
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -2751,7 +2750,7 @@ function linkDoubleClick(e, obj) {
           }
         ];
       }
-      function sizer() {
+  function sizer() {
         return [
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
 
@@ -2791,12 +2790,9 @@ function linkDoubleClick(e, obj) {
 
             if (node.data.scaleZu > 22) {
                 alert("Maximalgröße erreicht");
-                node.data.scaleZu = 22.0
-            }
-            ;
-
+                node.data.scaleZu = 22.0}
+            
             neuesDiagramm.model.setDataProperty(node.data, "scaleZu", neuScale);
-
 
         }
         neuesDiagramm.commitTransaction("Change Text Size");
