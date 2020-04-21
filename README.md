@@ -4,6 +4,8 @@ HTML-Aufbau verändert
   
 GoJS stürzt beim Einklappen von gruppierten Graphobjekten ab, wenn ein Binding für die Scale existiert.
 Jetzt werden vor dem Minimieren alle Gruppenobjekte zu einer "leeren" Template und beim Maximieren wieder in ihr altes Layout überführt - außerdem sind jetzt alle Objekte bis auf Gruppen mit Rechtsklick größenveränderlich.  
+
+Template + Static Folder von nutzlosen Überbleibseln befreit  
   
   
 Die aktuellen Abhängigkeiten sind:
