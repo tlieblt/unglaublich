@@ -27,17 +27,19 @@
       <nav class="navbar navbar-expand-md navbar-dark text-white bg-dark fixed-top">
         <div class="container">
           <a class="navbar-brand mr-5" href="/main" style="position:relative; left:-4%;">FactNet</a>
-           <span class="navbar-toggler-icon"></span>
-          </button>
+
+
+
+            <span class="navbar-toggler-icon"></span>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="/">Start</a>
               <a class="nav-item nav-link" href="/save">Neues Diagramm</a>
             </div>
 
-            <div class="navbar-nav">
+            <div class="navbar-nav" id="mehrChildren">
                 {% if current_user.is_authenticated %}
-                    <a class="nav-item nav-link" href="#">Eigene Modelle</a>
+                    <a class="nav-item nav-link" href="/eigenemodelle/1">Eigene Modelle</a>
                     <a class="nav-item nav-link" href="/profile">Profil</a>
                     <a class="nav-item nav-link" href="/logout">Ausloggen</a>
 
@@ -57,9 +59,24 @@
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
+                <div id="weg" class="alert alert-{{ category }}">
                   {{ message }}
                 </div>
+                  <script>
+
+
+                  function wech(weg) {
+                      weg.remove();
+                      return true;
+                  }
+                  //Blendet die Messages nach einer Zeit wieder aus
+                      document.addEventListener("DOMContentLoaded", function() {
+                      var wegdamit = document.getElementById("weg");
+                          setTimeout(wech(wegdamit), 15000);
+                      });
+
+                  </script>
+
               {% endfor %}
             {% endif %}
           {% endwith %}
@@ -88,23 +105,6 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script
 
-
-
-  <script type="text/javascript" src={{ url_for('static', filename='figures.js') }}> </script>
-
-
-
-
-
-        <!--script type="text/javascript" src={{ url_for('static', filename='jq3.js') }}> </script-->
-
-
-
-
-        <!--script type="text/javascript" src={{ url_for('static', filename='popper.min.js') }}> </-script-->
-
-
-
-
+  <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
 </body>
 </html>

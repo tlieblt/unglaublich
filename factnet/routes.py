@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from factnet import app, db, bcrypt
 from factnet.forms import RegistrationForm, LoginForm, AddInfoForm, SaveModelForm
-from factnet.pers import User, Models
+from factnet.pers import User, Models, Verwaltung
 from flask_login import login_user, logout_user, current_user, login_required
 import json
 import random
@@ -33,6 +33,10 @@ def register():
         user = User(alias=form.alias.data, email=form.email.data, f_o_s=' ', title=' ', password=secure_pw)
         db.session.add(user)
         db.session.commit()
+        macher = User.query.filter_by(email=form.email.data).first()
+        diag = Verwaltung(content={}, macher=macher, title="Ein erstes Modell")
+        db.session.add(diag)
+        db.session.commit()
         flash('Account für ' + form.alias.data + ' erstellt!', 'success')
         return redirect(url_for('home', title = 'Start'))
     return render_template('register.html', title='Registrierung', form=form)
@@ -41,7 +45,7 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        flash('Eingeloggt als ' + current_user.alias, 'success')
+        #flash('Eingeloggt als ' + current_user.alias, 'success')
         return redirect(url_for('home', title = 'Start'))
     form = LoginForm()
     if form.validate_on_submit():
@@ -109,15 +113,6 @@ else:
     return jsonify(data)  # serialize and use JSON headers
 
 '''
-#benutzt sicherheitskopie saver html
-@app.route('/hello', methods=['GET', 'POST'])
-def hello():
-    if request.method == 'POST':
-        print("were postin")
-        print(request.get_json())  # parse as JSON
-        return render_template('saver.html')
-    else:
-        return render_template('saver.html')
 
 
 @app.route('/save', methods=['GET', 'POST'])
@@ -135,8 +130,6 @@ def save():
         return response
 
     else:
-        print('model sdfsdf')
-
         return render_template('save.html')
 
 
@@ -152,7 +145,7 @@ def change_model(model_id):
         return redirect(url_for('login'))
     elif request.method == 'GET' and request.content_type == 'application/json':
         response = app.response_class(response=model.content, status=200, mimetype='application/json')
-        print(response.data)
+        print(model.content)
         return jsonify(model.content)
         #return jsonify(model.content)
     elif request.method == 'POST' and request.content_type == 'application/json':
@@ -168,26 +161,108 @@ def change_model(model_id):
     else:
         return render_template('saved.html', diagram_name = model.title), 201
 
+@login_required
+@app.route("/einmodell/<int:page>", methods=['GET', 'POST'])
+def einmodell(page):
+    ubersicht = Verwaltung.query.get_or_404(page)
+    if ubersicht.macher != current_user:
+        return '', 404
+    elif request.method == "GET" and request.content_type == 'application/json':
+        print("ubersicht")
+        print(ubersicht.content)
+        #models = Verwaltung.query.filter_by(macher=current_user).paginate(page=page, per_page=1)
+        model = ubersicht.content
+        response = app.response_class(response=model, status=200, mimetype='application/json')
+        return jsonify(model)
 
-#mb obsolet
-'''
-    @app.route('/savemod', methods=['GET', 'POST'])
-    @login_required
-    def save_modell():
-        if request.method == 'POST' and request.content_type == 'application/json':
-            print("im save requestdata: ")
+    elif request.method == "GET":
+        print("ubersicht")
+        print(ubersicht)
+        # models = Verwaltung.query.filter_by(macher=current_user).paginate(page=page, per_page=1)
+        model = ubersicht.content
+        print(model)
+        response = app.response_class(response=model, status=200, mimetype='application/json')
 
-            print(request.data)
-            diagramm_data = request.get_json()
-            title = request.get_data().decode()
-            model = Models(title=title, content=diagramm_data, creator=current_user)
-            db.session.add(model)
-            db.session.commit()
+        print("nur get")
+        return render_template("diagramme.html", title=ubersicht.title, model=model)
+    elif request.method == 'POST' and request.content_type == 'application/json':
+        print(ubersicht.content)
+        print("json request im post: ")
+        print(request.get_json())  # parse as JSON
+        ubersicht.content = request.get_json()
+        flash('Änderung gespeichert', 'success')
+        db.session.commit()
+        print(ubersicht.content)
+        return '', 204
 
-            print('model gesischert')
+    elif request.method == 'POST' and request.content_type == 'text/html;charset=UTF-8':
+        print(ubersicht.content)
+        print("json request im post: ")
+        neuerTitel = str(request.data.decode("utf-8"))
+        #neuerTitel = neuerTitel[]
+        print(neuerTitel)  # parse as JSON
+        ubersicht.title = neuerTitel
+        db.session.commit()
+        print(ubersicht.content)
+        return '', 204
 
-            flash('model gesischert', 'success')
-            return redirect(url_for('main', model_id=model.id))
-        else:
-            return render_template('save.html')  
-'''
+@login_required
+@app.route("/einmodell/<int:page>/<int:dias>", methods=['GET', 'POST'])
+def modellbearbeitung(page,dias):
+    modell = Verwaltung.query.get_or_404(page)
+
+    if request.method == "GET" and request.content_type == 'application/json':
+        print(modell.content)
+        #models = Verwaltung.query.filter_by(macher=current_user).paginate(page=page, per_page=1)
+        model = modell.content
+        print(model)
+        response = app.response_class(response=model, status=200, mimetype='application/json')
+        return jsonify(model)
+
+    elif request.method == "GET":
+        print(modell)
+        diagramme = Models.query.filter_by(creator=current_user).paginate(page=dias, per_page=10)
+        print("diagramme.total")
+        print(diagramme.pages)
+        model = modell.content
+        print(modell)
+        response = app.response_class(response=model, status=200, mimetype='application/json')
+
+        print("nur get")
+        return render_template("diagrammbearbeitung.html", diagramme=diagramme, title=modell.title, model=model)
+
+
+
+
+
+@login_required
+@app.route("/eigenemodelle/<int:pg>", methods=['POST', 'GET'])
+def eigenemodelle(pg):
+
+    if request.method == 'POST' and request.content_type == 'text/html;charset=UTF-8':
+        title = request.get_data().decode()
+        neuetmodell = Verwaltung(title=title, content={}, macher=current_user)
+        db.session.add(neuetmodell)
+        db.session.commit()
+        response = app.response_class(response=str(neuetmodell.id), status=302, mimetype='text/html;charset=UTF-8')
+        return response
+            #(url_for('einmodell', page=neuetmodell.id, dias=1))
+
+    modelle = Verwaltung.query.filter_by(macher=current_user).paginate(page=pg, per_page=5)
+    for m in modelle.items:
+        print(m.id)
+    return render_template("sichdiag.html", user=current_user, models=modelle)
+
+
+@app.route('/neuesModell', methods=['GET', 'POST'])
+@login_required
+def neuesmodell():
+    ersterInhalt = {}
+
+    if request.method == 'POST' and request.content_type == 'text/html;charset=UTF-8':
+        title = request.get_data().decode()
+        model = Verwaltung(title=title, content=ersterInhalt, macher=current_user)
+        db.session.add(model)
+        db.session.commit()
+        print(type(model.id))
+        return redirect(url_for('einmodell', page=model.id, dias=1))
