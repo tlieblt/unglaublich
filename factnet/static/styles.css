@@ -74,13 +74,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .Diagram {
-  position:initial;
+  position:absolute;
   margin-top: 10px;
-  width:77vw;
-  height:70vh;
+  left:0%;
+  width:98%;
+  width:98vw;
+  height:79%;
+  height: 79vh;
+  margin-bottom:0px;
   border:2px solid whitesmoke;
   background-color:#30403f;
 }
-
-
 

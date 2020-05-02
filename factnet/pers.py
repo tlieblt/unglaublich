@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
     title = db.Column(db.Text, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     models = db.relationship('Models', backref="creator", lazy=True)
+    verwaltung = db.relationship('Verwaltung', backref="macher", lazy=True)
 
     def __repr__(self):
         return f"User('{self.alias}','{self.email}','{self.f_o_s}','{self.title}','{self.id}')"
@@ -49,3 +50,13 @@ class Models(db.Model):
 
     def __repr__(self):
         return f"Models('{self.title}','{self.content}','{self.user_id}')"
+
+
+class Verwaltung(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(JsonDict)
+    title = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Verwaltung('{self.content}','{self.user_id}',{self.title})"

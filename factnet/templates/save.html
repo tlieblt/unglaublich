@@ -5,16 +5,32 @@
     <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gojs@2.1/release/go.js"> </script>
+      <script type="text/javascript" src={{ url_for('static', filename='GeometryReshapingTool.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
+
+
     <h1 id="überschrift">Zeit ein Modell anzulegen!</h1>
+
     <p id="ueber1">
     <h5 id="ueber2">Wie wollen sie dieses Modell nennen?</h5>
         <input class="spaeter infoAblegen content-section ml-2"id="derTitel" type="text" placeholder="Modellname" >
         <input type="button" id ="ueber3" class="btn btn-outline-success" value="Diagramm erstellen" onclick="unhide()" >
     </p>
     <p>
-        <input class="anfang infoAblegen content-section"id="dieInfo" type="text" placeholder="Hier eingeben!" >
-        <input type="button" id ="senderino" class="anfang btn btn-outline-success" value="Ins Diagramm" onclick="addData()" >
-        <input type="button" id ="savior" class="anfang btn btn-outline-success"  value="Diagramm Speichern" onclick='sendData()' >
+
+
+    <input class="anfang btn btn-outline-success"id="dieInfo" type="text" placeholder="Neuer Knoten" style="position:relative;margin-left:10px;" >
+        <!--input type="button" id ="senderino" class="btn btn-outline-success" value="neuer Knoten" onclick="addData()" style="position:relative; bottom:-10%;left:52%;"-->
+
+        <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class="anfang btn btn-outline-success"  placeholder="Suchen" style=" position:relative; margin-left: 250px" autocomplete="off">
+        <!--input type="button" id ="savior" class=" btn btn-outline-success" value="Suchen" onclick="suchFunktion()" style="position:relative; bottom:-10%;left:30%;"-->
+        <input type="button" id ="savior" class="anfang btn btn-outline-success" value="Speichern" onclick="sendData()"style="position:relative; margin-left: 25%;" >
+
+
+
+
+
+
 
     </p>
    <!--
@@ -22,14 +38,12 @@
     <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->
 
     <div class="anfang">
-        <div id="linkPalette" class=""></div>
-        <div id="mainDiagram" class = "Diagram"></div>
+        <div id="mainDiagram" style="margin-top: 0px;position:absolute;top:18%;left:2   %;width:96vw;height:82vh;border:2px solid whitesmoke;background-color:#30403f;"></div>
     </div>
-    <div id="derInspektor" class="inspector" style="position:relative; bottom:30%;left:-36%;">
+    <div id="derInspektor" class="inspector" style="position:absolute; top:12%;left:68%; width:0vh;">
     </div>
 
 <script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
 <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
-<script type="text/javascript" src={{ url_for('static', filename='DragZoom.js') }}> </script>
 
 {% endblock content %}

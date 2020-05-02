@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+
+        <p id="neueID" style="display:none"></p>
+
+    <p id="counter" style="display:none">0</p>
+<script> i = 0</script>
+
+    <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='HyperlinkText.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='GeometryReshapingTool.js') }}> </script>
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+
+<p id="modellanzahl" style="display:none">{{ models.total }}</p>
+
+            <h1 class="mt-8" style="position:relative; margin-left: 2%; margin-top:5%;">Modelle von {{ user.alias }} ({{ models.total }})</h1>
+
+    <input style="position:absolute; top:12%;left:60%;margin-left:2%; font-size:large;" type="text" placeholder="Neues Modell" id="elTitel">
+    <input type="button" id ="savior" class=" btn btn-outline-success" onclick="neuetmodell()" value="Erstellen" style="position:absolute; top:11.5%;left:75%;margin-left:2%; font-size:large;" >
+
+    {% for model in models.items %}
+        <article class="media content-section rounded" style="margin:2%">
+            <div id="Diagramm" style="background-color:green; margin-bottom: 1%; position:relative;left:26%;width:70%;height:30vh;border:2px solid whitesmoke;"></div>
+          <div class="media-body">
+            <div class="article-metadata">
+              <a style="position:absolute; font-size: large; left:4%;" href="{{ url_for('einmodell', page=model.id) }}">
+                  {%   if model.title %}
+                  {{ model.title}}</a>
+                {% else  %}
+                Unbenanntes Modell</a>
+                {% endif %}
+                <p style="display:none;" id = "data">{{ model.content }}</p>
+                <p style="display:none;" id = "id">{{ model.id }}</p>
+            </div>
+
+
+              <script>
+                  var o = document.getElementById("counter").innerText;
+                  document.getElementById("Diagramm").id = "Diagramm"+o;
+                  document.getElementById("data").id = "data"+o;
+                  document.getElementById("id").id = "id"+o;
+
+                  o=parseInt(o);
+                  console.log(o);
+                  o=o+1;  o.toString();
+                  document.getElementById("counter").innerText = o;
+
+              </script>
+          </div>
+                    </article>
+
+        <p></p>
+    {% endfor %}
+
+    <script>
+
+            document.addEventListener("DOMContentLoaded", function() {
+                make_dias();
+                });
+
+
+    var linkposi =0;
+    function belebeLinks(){
+        var link = document.getElementById("dummerlink");
+
+        if(link) {
+        console.log("BELEBE LINKS");
+        console.log("BELEBE LINKS");
+
+          var kurz = window.location.href.toString();
+          kurz = kurz.substring(0,kurz.lastIndexOf("/"));
+          console.log(kurz);
+          kurz = kurz + "/" + link.innerText;
+          console.log(kurz);
+          link.href=kurz;
+
+          /*
+
+                    if (linkposi == 0) {
+              link.style.position = "relative";
+              link.style.top = "10%";
+              link.style.left = "86%";
+          }
+
+           */
+          var styl = link.style.right;
+          styl= styl.toString().split("%");
+          console.log(styl[0]);
+          styl[0] = parseInt(styl[0]);
+          styl[0] += linkposi;
+          link.style.right=styl[0].toString()+"%";
+
+                    link.id="smarterLink"+linkposi;
+
+          linkposi-=3;
+
+    }}
+
+
+        </script>
+
+
+
+
+
+
+
+    {% for page_num in models.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+      {% if page_num %}
+        {% if models.page == page_num %}
+
+
+        {% else %}
+          <a id= "dummerlink" style="position: absolute; top: 12%;right:13%;" class= "btn btn-outline-info " >{{ page_num }}</a>
+                <script> belebeLinks();</script>
+
+        {% endif %}
+      {% else %}
+      {% endif %}
+    {% endfor %}
+
+    <script type="text/javascript" src={{ url_for('static', filename='diagramme.js') }}> </script>
+
+{% endblock content %}

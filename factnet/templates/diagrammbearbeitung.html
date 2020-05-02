@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block content %}
+    <script> var yps = [] </script>
+    <p id="counter" style="display:none">0</p>
+
+    <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='HyperlinkText.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='GeometryReshapingTool.js') }}> </script>
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+
+
+
+    <p id="modellanzahl" style="display:none">{{ diagramme.total }}</p>
+    <input id="derTitel" style="margin-bottom:1%;margin-top:5%; margin-left:2%; font-size:x-large;" type="text" onclick="document.getElementById('titelversender').style.visibility='visible';" value=" {{ title }}">
+    <script>
+    function autoTitel(){
+    var titele= document.getElementById("derTitel");
+    if (titele) {
+    titele.addEventListener("keyup", function (event) {
+        if (event.keyCode != undefined) {
+            if (event.keyCode === 13) {
+                //event.preventDefault();
+                console.log("innerste If schleife");
+                schicktJSONanURL();
+                document.getElementById('titelversender').style.visibility='hidden';
+            }
+        }
+    });
+}};
+
+    </script>
+        <input id="titelversender" type="button" class=" btn-sm btn-outline-success" value="Titel ändern" onclick="sendVerData('titel');  document.getElementById('titelversender').style.visibility='hidden';" style="visibility:hidden; position:relative; margin-left: 0.2%; font-size: 12px;" >
+
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="sendVerData('modell')" style="position:absolute; left: 52%; top:10%;" >
+            <div id="Diagramm0" style="background-color:green; position:absolute;left:1%;width:60vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
+                <div id="Palette" style="background-color:green; position:absolute;left:65%;width:30vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
+
+               <script>
+               function machEintraege() {
+                   var o = document.getElementById("counter").innerText;
+                   o = parseInt(o);
+                   var eid = document.getElementById("id");
+                   var title = document.getElementById("title");
+                   eid.id = "id" + o.toString();
+                   title.id = "title" + o.toString();
+                   console.log(eid);
+                   console.log(title);
+                   if (o < 0) {
+                   }
+
+
+                   o = o + 1;
+                   o.toString();
+                   document.getElementById("counter").innerText = o;
+               }
+              </script>
+
+
+    <div id="anfang"></div>
+    {% for dia in diagramme.items %}
+        <p style="display:none;" id="title">{{ dia.title }}</p>
+        <p style="display:none;" id="id">{{ dia.id }}</p>
+
+
+    <script> machEintraege(); </script>
+
+
+
+    {% endfor %}
+
+          </div>
+        <p></p>
+            </article>
+
+    <script>
+    var linkposi =0;
+    function belebeLinks(){
+        var link = document.getElementById("dummerlink");
+
+        if(link) {
+        console.log("BELEBE LINKS");
+        console.log("BELEBE LINKS");
+
+          var kurz = window.location.href.toString();
+          kurz = kurz.substring(0,kurz.lastIndexOf("/"));
+          console.log(kurz);
+          kurz = kurz + "/" + link.innerText;
+          console.log(kurz);
+          link.href=kurz;
+
+          /*
+
+                    if (linkposi == 0) {
+              link.style.position = "relative";
+              link.style.top = "10%";
+              link.style.left = "86%";
+          }
+
+           */
+          var styl = link.style.right;
+          styl= styl.toString().split("%");
+          console.log(styl[0]);
+          styl[0] = parseInt(styl[0]);
+          styl[0] += linkposi;
+          link.style.right=styl[0].toString()+"%";
+
+                    link.id="smarterLink"+linkposi;
+
+          linkposi-=3;
+
+    }}
+
+    function modellbearbeitung() {
+        var ma = document.getElementById("mehrChildren");
+      var a = document.createElement('a');
+            var linkText = document.createTextNode("Modellansicht");
+      a.appendChild(linkText);
+      a.title = "Modellansicht";
+      a.class="nav-item nav-link";
+      a.style="position:absolute; left:50%;";
+      a.href = window.location.href.substring(0,window.location.href.lastIndexOf("/"));
+    console.log(ma);
+      ma.appendChild(a);
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+                make_dia();
+                make_palette();
+                autoTitel();
+                modellbearbeitung();
+                });
+        </script>
+<button id = "butti" type="button" class="btn btn-primary" data-toggle="modal" style="display: none;" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+  <div class="modal-dialog" role="document" >
+      <p id="ident" style="display: none;">0</p>
+    <div class="modal-content" style="position:absolute;left:-126%;width:94vw;height:92vh;top:18%;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Kurzansicht</h5>
+          <div id="tempDia" style="background-color:green; position:inherit;left:-4%;width:100%;height:76vh;margin-top:4%;border:2px solid whitesmoke;">
+
+          </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" style="position:relative; bottom:10px;" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+        <button type="button" id="tempspeichern" style="position:relative; bottom:10px;" class="btn btn-primary" onclick="sendDatar()">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<div>
+    {% for page_num in diagramme.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+      {% if page_num %}
+        {% if diagramme.page == page_num %}
+
+
+        {% else %}
+          <a id= "dummerlink" style="position: absolute; top: 10%;right:15%;" class= "btn btn-outline-info " >{{ page_num }}</a>
+                <script> belebeLinks();</script>
+
+        {% endif %}
+      {% else %}
+      {% endif %}
+    {% endfor %}
+</div>
+
+    <script type="text/javascript" src={{ url_for('static', filename='diagramme.js') }}> </script>
+
+{% endblock content %}

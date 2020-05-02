@@ -1,0 +1,830 @@
+var jo = go.GraphObject.make;
+var ein_dia;
+var Diagramm0;
+var Diagramm1;
+var Diagramm2;
+var Diagramm3;
+var Diagramm4;
+    var neuesDiagramm;
+    var zieher;
+    var kurzDiagramm;
+
+diagramme = [Diagramm0,Diagramm1,Diagramm2,Diagramm3,Diagramm4];
+
+
+diagramme_fertig = false;
+function getDiagramData(id, diagramm) {
+    let request = new XMLHttpRequest();
+    request.open("GET", url=`saved/${id}`);
+    console.log(`saved/${id}`);
+    request.setRequestHeader("Content-Type", "application/json");
+    request.addEventListener('load', function (event) {
+            console.log(this.responseText);
+console.log(id);
+        if ((JSON).parse(this.responseText)) {
+
+            var model_json = JSON.parse(this.responseText);
+            //console.log(model_json.isJSON());
+
+            if(model_json.nodeDataArray) {
+                let cnt = [0,0];
+                let counter = 0;
+                model_json.nodeDataArray.forEach(function (x) {
+
+                        let ce = x.loc.split(" ");
+                        ce[0] +=cnt[0];
+                        ce[1] +=cnt[1];
+                   counter++;
+                    });
+                    ce[0] /=counter;
+                ce[1] /=counter;
+
+
+               // ce[0] /= nodeNo;
+                //ce[1] /= nodeNo;
+                modelCenter = ce;
+                console.log(ce);
+            }
+            //zum Debuggen
+            //console.log('Diagramm Data: ');
+            //console.log(model_json);
+            //Stellt sicher, dass das Diagramm initialisiert wurde
+            //läd die Objekttemplates bevor das Modell geladen wird
+
+          //  style_dia();
+
+        diagramm.model = new go.Model.fromJson(model_json);
+
+        } else {
+            console.warn(request.statusText, request.responseText);
+        }
+    });
+    request.send();
+}
+
+function fill_dias() {
+    for(var i=0;i<4;i++) {
+        let dia_no =parseInt(document.getElementById(`data${i}`).innerText);
+
+        getDiagramData(i,dia_no)
+    }
+}
+
+
+
+
+function getJson(numba){
+    let dies = "data" + numba;
+    var dieDaten = document.getElementById(dies).innerText;
+    console.log(dieDaten);
+    if(!dieDaten) { dieDaten = {'class':'GraphLinksModel', 'nodeDataArray':[], 'linkDataArray':[]}};
+        dieDaten.toJSON();
+
+    console.log(typeof(dieDaten));
+    return dieDaten;
+}
+
+
+isEnabled:false
+
+function make_dias() {
+    //var nodeArray = document.getElementById("modelldaten").innerText;
+    //console.log(typeof(nodeArray));
+    //var dia = JSON.parse(nodeArray);
+
+    //if(!nodeArray){ var nodeDataArray = [];}
+    var diagrammzahl = parseInt(document.getElementById("modellanzahl").innerText);
+
+    console.log(diagrammzahl);
+
+    for(var i=0;i<diagrammzahl;i++ ){
+        console.log(`diagramme.push(Diagramm${i}`);
+        var dies = document.getElementById("id"+i);
+        if(dies){console.log("Digramm" + i)}
+
+
+  diagramme[i]= jo(go.Diagram, `Diagramm${i}`, {
+        //isEnabled: false,
+//        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
+   scale:1
+    });
+
+
+
+        let eidie = parseInt(document.getElementById("id"+i).innerText);
+        fetchdias(i,eidie);
+        //daten = JSON.parse(daten);
+        console.log(eidie);
+
+
+      diagramme[i].nodeTemplate =
+        jo(go.Node, "Auto",
+            jo(go.Shape, "Ellipse", {fill: "lightskyblue"}),
+            jo("HyperlinkText",
+                function (node) {
+                    return "http://127.0.0.1:5000/saved/" + node.data.id;
+                },
+                function (node) {
+                    return "Meine Id ist: " + node.data.title;
+                },
+                {margin: 10}
+            )
+        );
+
+//console.log(  diagramme[i]);
+//diagramme[i].model=new go.Model.fromJSON(daten);
+       diagramme[i].contextMenu =
+    jo("ContextMenu",
+             jo("ContextMenuButton",
+            jo(go.TextBlock, "Neue Node"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { knotenfarbe: "green", hauptInfo: "mehr Info", scale:"1.0",scaleZu:"1.0",
+                //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
+                textfarbe:"white", hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften",
+                info: [{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}]};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten');}}),
+
+             jo("ContextMenuButton",
+            jo(go.TextBlock, "Neuer Logik-Knoten"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var logiKnoten = { color:"white", qwo:"eh", scale:"1.0", category:"logiktemplate", visible:true, visand:true, visor:false,visiff:false,vispim:false,visimp:false,visall:false, visex:false};
+        //
+            d.model.addNodeData(logiKnoten);
+            part = d.findPartForData(logiKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten')
+            }}),
+      // no binding, always visible button:
+      jo("ContextMenuButton",
+        jo(go.TextBlock, "Neue Unklarheit"),
+        { click: function(e, obj) {
+          e.diagram.commit(function(d) {
+            var data = {scale:"1.0",symbolfarbe:"green",color:"red",wa: " ",frage:"Frage oder Unklarheit", antwort:"Eine ErklärungErklärungErklärungErklärungErklärung", category:"helptemplate", hauptInfo:"nicht leer", visible:true};
+            d.model.addNodeData(data);
+            part = d.findPartForData(data);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+          }, 'new node');
+        } }),
+
+
+        jo("ContextMenuButton",
+            jo(go.TextBlock, "Neuer Kommentar"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { qwa:"so", scale:"1.0", category:"kommentar",color:"yellow",text:"Ergänzend:",expand:false, klein: true};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten');}}),
+        jo("ContextMenuButton",
+            jo(go.TextBlock, "Neue Idee"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { symbolfarbe: "yellow", qwer:"q",scale:"1.0", category:"idea",color:"green",text:"Geistesblitz!"};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten');}}),
+
+        jo("ContextMenuButton",
+        jo(go.TextBlock, "Redo"),
+        { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
+        new go.Binding("visible", "", function(o) {
+            return o.diagram.commandHandler.canRedo();}).ofObject()),
+                                         jo("ContextMenuButton",
+            jo(go.TextBlock, "Neue Gruppe"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { category: "detailGruppe",isGroup:"True", group:"", color:"yellow", visible:"True", auf:"True", zu:"False",
+                restInfo:"Definition oder Eigenschaften", textfarbe:"white", scale:1,
+                info: [{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}], knotenfarbe:"green"};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neue Gruppe');}}),
+
+              jo("ContextMenuButton",
+        jo(go.TextBlock, "Undo"),
+        { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
+        new go.Binding("visible", "", function(o) { return o.diagram.commandHandler.canUndo();}).ofObject()),
+      jo("ContextMenuButton",
+        jo(go.TextBlock, "Redo"),
+        { click: function(e, obj) { console.log(e.diagram.toString())} },
+        new go.Binding("text", "", function(o) {
+            return o.diagram.commandHandler.canRedo();}).ofObject()));
+        fetchdia();
+    }}
+
+
+
+    function holEinDiagramm() {
+    let request = new XMLHttpRequest();
+    request.open("GET", url = window.location.path);
+    request.setRequestHeader("Content-Type", "application/json");
+    request.addEventListener('load', function (event) {
+                   console.log(this.responseText);
+
+        if ((JSON).parse(this.responseText)) {
+            var model_json = JSON.parse(this.responseText);
+            console.log(model_json);
+            diagramme[i].model = go.Model.fromJSON(model_json);
+            console.log(model_json.isJSON());
+            //    } else {
+            //console.warn(request.statusText, request.responseText);
+            //  }
+
+        }
+            console.log(request);
+
+    request.send();});
+        console.log(request.responseText)
+    }
+
+
+
+
+
+function fetchdias(diaNummer, id) {
+    var loc = window.location.href.toString();
+    var wat = loc.split("/eigene");
+
+   wat[0] = wat[0].concat("/einmodell/"+id);
+    console.log(wat);
+
+      fetch(wat[0], {
+         method: "GET",
+         headers: new Headers({
+             "content-type": "application/json"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+//           console.log('response: ');
+//           console.log(response);
+
+             var model_json = JSON.parse(response);
+            console.log(typeof(model_json));
+
+             diagramme[diaNummer].model =  go.Model.fromJSON(model_json);
+             //console.log(neuesDiagramm.model);
+             //console.log(diagramme[0].model);
+
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+              //console.log('hier kann noch mehr passieren');
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+
+}
+
+
+function fetchdiar(miteidie) {
+          console.log(window.location.href);
+
+      fetch(`/saved/${miteidie}`, {
+         method: "GET",
+         headers: new Headers({
+             "content-type": "application/json"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+//           console.log('response: ');
+//           console.log(response);
+
+             var model_json = JSON.parse(response);
+            console.log(response);
+
+             kurzDiagramm.model =  go.Model.fromJSON(model_json);
+            var maxx = 0;
+            var maxy =0;
+            var minx=0;
+            var miny=0;
+            var ausdehnung=[];
+             kurzDiagramm.nodes.each(function(o){
+                 console.log(o.data.loc);
+                 var loc = o.data.loc;
+                 console.log(o.data.loc);
+                 locations = loc.split(" ");
+                     if (locations[0] < minx) {minx = locations[0]}
+                     else if (locations[0] > maxx) {maxx = locations[0]}
+                     if (locations[1] > maxy) {maxy = locations[0]}
+                     else if (locations[1] < miny) {miny = locations[0]}
+                console.log("minwerte");
+                    ausdehnung[0] = parseFloat(minx);
+                    ausdehnung[1] = parseFloat(maxx);
+                    ausdehnung[2] = parseFloat(miny);
+                    ausdehnung[3] = parseFloat(maxy);
+             });
+             let z = ((ausdehnung[2]+ausdehnung[3])*0.5)+300;
+             console.log(typeof(ausdehnung[1]))
+             kurzDiagramm.centerRect(new go.Rect(  (ausdehnung[0]+ausdehnung[1])*0.5,z,
+                 Math.abs((ausdehnung[1]-ausdehnung[0])),Math.abs((ausdehnung[3]-ausdehnung[2]))+200 ));
+             //console.log(diagramme[0].model);
+            console.log(ausdehnung);
+            kurzDiagramm.scale=0.5;
+
+
+
+            console.log(Math.abs((ausdehnung[3]-ausdehnung[2])));
+            console.log(Math.abs((ausdehnung[1]-ausdehnung[0])));
+
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+              //console.log('hier kann noch mehr passieren');
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+
+}
+
+function fetchdia() {
+          console.log(window.location.href);
+
+      fetch(window.location.href, {
+         method: "GET",
+         headers: new Headers({
+             "content-type": "application/json"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+//           console.log('response: ');
+//           console.log(response);
+
+             var model_json = JSON.parse(response);
+            console.log(response);
+
+             neuesDiagramm.model =  go.Model.fromJSON(model_json);
+            var maxx = 0;
+            var maxy =0;
+            var minx=0;
+            var miny=0;
+            var ausdehnung=[];
+             neuesDiagramm.nodes.each(function(o){
+                 console.log(o.data.loc);
+                 var loc = o.data.loc;
+                 console.log(o.data.loc);
+                 locations = loc.split(" ");
+                     if (locations[0] < minx) {minx = locations[0]}
+                     else if (locations[0] > maxx) {maxx = locations[0]}
+                     if (locations[1] > maxy) {maxy = locations[0]}
+                     else if (locations[1] < miny) {miny = locations[0]}
+                console.log("minwerte");
+                    ausdehnung[0] = parseFloat(minx);
+                    ausdehnung[1] = parseFloat(maxx);
+                    ausdehnung[2] = parseFloat(miny);
+                    ausdehnung[3] = parseFloat(maxy);
+             });
+             let z = ((ausdehnung[2]+ausdehnung[3])*0.5)+300;
+             console.log(typeof(ausdehnung[1]))
+             neuesDiagramm.centerRect(new go.Rect(  (ausdehnung[0]+ausdehnung[1])*0.5,z,
+                 Math.abs((ausdehnung[1]-ausdehnung[0])),Math.abs((ausdehnung[3]-ausdehnung[2]))+200 ));
+             //console.log(diagramme[0].model);
+            console.log(ausdehnung);
+            neuesDiagramm.scale=0.3;
+
+
+
+            console.log(Math.abs((ausdehnung[3]-ausdehnung[2])));
+            console.log(Math.abs((ausdehnung[1]-ausdehnung[0])));
+
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+              //console.log('hier kann noch mehr passieren');
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+
+}
+
+
+
+/*
+
+            function make_dias() {
+                if(document.getElementById("Diagramm0")){
+                    erstDiagramm = jo(go.Diagram, "Diagramm0", {
+                        isEnabled: false,
+//        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
+                        scale: 0.5
+                    });
+
+                    var daten_eins = document.getElementById("data0").innerText;
+                    console.log(daten_eins);
+                    daten_eins = daten_eins.replace(/'/g,'"');
+                    console.log(daten_eins);
+//daten_eins= "`" + daten_eins + "`";
+                    console.log(daten_eins);
+                    //daten_eins = '{"class": "GraphLinksModel", "nodeDataArray": [{"hauptInfo": "mehr Info", "restInfo": "mehr dazu", "hintergrund": "True", "vordergrund": "False", "category": "detailed", "key": -1}], "linkDataArray": []}';
+                    //daten_eins = daten_eins.normalize();
+                    daten_eins = JSON.parse(daten_eins);
+                    console.log(daten_eins);
+
+                    erstDiagramm.model = new go.Model.fromJson(daten_eins);
+
+                    if(daten_eins.nodeDataArray) {
+
+
+                        //Das Diagramm läd als erste Position den Mittelwert aller Locations
+                        //Könnte vielleicht verschoben, aber hier hat man das JSON direkt
+                        var ce = [0.0, 0.0];
+                        //        let temp = model_json.WOOOOO.loc.split(" ");
+
+                        //ce[0]=mparseFloat(Math.abs(temp[0]));
+                        //ce[1]=mparseFloat(Math.abs(temp[1]));
+                        nodeNo = 0.0;
+                        //Achtung das folgende ist nur ein Fix weil veraltete Datenbankeinträge
+                        // aufgrund ihrer mangelnden Category nicht richtig angezeigt werden
+                        counter = 0;
+
+                        let lastcord;
+                        let center = [0, 0];
+                        daten_eins.nodeDataArray.forEach(function (x) {
+                            let ce = x.loc.split(" ");
+                            center[0] += ce[0];
+                            center[1] += ce[1];
+                            console.log(ce);
+                            counter++;
+                        })
+                        ce /= counter;
+                        console.log(ce);
+                        erstDiagramm.centerRect(new go.Rect(ce[0],ce[1]));
+                    }}
+
+
+
+
+                erstDiagramm.nodeDataArray =[]; //"{'class':'GraphLinksModel', 'nodeDataArray':[], 'linkDataArray':[]}";
+                erstDiagramm.linkDataArray =[];
+                var erst = document.getElementById("data0").innerText.toString();
+                erst = erst.replace(/'/g,'"');
+                //erst ="'" + erst + "'";
+
+                console.log(erst);
+                erst = JSON.parse(erst);
+                console.log(erst);
+
+                console.log(typeof(erst));
+                if(erst.linkDataArray){
+                erstDiagramm.model =new go.Model.fromJson(erst); }
+
+                //erstDiagramm.model = erst;
+
+
+
+
+                if(document.getElementById("Diagramm1")){
+
+                    zweitDiagramm = jo(go.Diagram, "Diagramm1", {
+                        isEnabled: false,
+//        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
+                        scale: 0.5
+                    });}
+
+
+
+//    zweitDiagramm.model = new go.Model.fromJson(document.getElementById("data1").innerText);
+                if(document.getElementById("Diagramm2")){
+
+                    drittDiagramm = jo(go.Diagram, "Diagramm2", {
+                        isEnabled: false,
+//        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
+                        scale: 0.5
+                    });}
+
+
+                if(document.getElementById("Diagramm3")){
+
+
+                    viertDiagramm = jo(go.Diagram, "Diagramm3", {
+                        isEnabled: false,
+//        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
+                        scale: 0.5
+                    });}
+
+
+                if(document.getElementById("Diagramm4")){
+
+                    fnftDiagramm = jo(go.Diagram, "Diagramm4", {
+                        isEnabled: false,
+//        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
+                        scale: 0.5
+                    });}
+
+            }
+        }
+    }
+*/
+
+
+
+function make_palette() {
+    zieher = jo(go.Palette, "Palette",
+        {initialPosition: new go.Point(0,-500)},
+        {layout: jo(go.GridLayout,
+        {sorting: go.GridLayout.Descending,
+
+        spacing:new go.Size(20, 20),
+            cellSize:new go.Size(200,100),
+        wrappingColumn:2})});
+
+
+zieher.nodeTemplate =
+    jo(go.Node, "Auto",
+      jo(go.Shape, "RoundedRectangle",
+          {minSize: new go.Size(60,40)},
+        new go.Binding("fill", "color")),
+
+                    jo("HyperlinkText",
+                function (node) {
+                    return "http://127.0.0.1:5000/saved/" + node.data.id;
+                },
+                function (node) {
+                    return node.data.title;
+                },
+                {margin: 20,
+                scale:1.4}
+            )
+    );
+
+    var ct = parseInt(document.getElementById("counter").innerText)
+    for(var j = 0;j <ct;j++){
+        var tl = document.getElementById("title"+j).innerText;
+        var d = document.getElementById("id"+j).innerText;
+        var knoten = {"title": tl, "id": d,"color": "lightskyblue"};
+    zieher.model.addNodeData(knoten)}
+
+    zieher.scale=0.9;
+//    zieher.centerRect(new go.Rect(330,-100,300,800));
+
+
+
+
+
+
+}
+
+
+function sendData() {
+
+    //console.log('url is : ')
+    //Der einzige Weg zu einem Diagramm ist über /saved/DiagrammID außer bei der Erstellung
+
+    var aqui = window.location.href.toString();
+    wot = aqui.substr(0, aqui.lastIndexOf("/"));
+    let modelAsJson = neuesDiagramm.model.toJson();
+// Hier noch mit XMLHttpRequest, später mit Fetch
+    let xhr = new XMLHttpRequest();
+    //let url = `${window.origin}/saved/${model_id}`;  zum Testen noch drin wie folgende
+    xhr.open("POST", wot, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+
+    //console.log('folgendes json file wird geschickt: ');
+    //console.log(modelAsJson.toString());
+    xhr.send(modelAsJson);
+    neuesDiagramm.isModified = false;
+}
+
+
+
+
+
+function make_dia() {
+    //var nodeArray = document.getElementById("modelldaten").innerText;
+    //console.log(typeof(nodeArray));
+    //var dia = JSON.parse(nodeArray);
+
+    //if(!nodeArray){ var nodeDataArray = [];}
+
+    neuesDiagramm= jo(go.Diagram, `Diagramm0`, {
+        //isEnabled: false,
+//        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
+       // scale: 1.2
+        "toolManager.mouseWheelBehavior": go.ToolManager.WheelZoom,
+        "grid.visible": true,
+        "grid.gridCellSize": new go.Size(25, 25),
+    });
+    neuesDiagramm.scrollMode = go.Diagram.InfiniteScroll;
+
+    neuesDiagramm.nodeTemplate =
+        jo(go.Node, "Auto",
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          {
+            locationSpot: go.Spot.TopLeft
+          },
+            jo(go.Shape, "Ellipse", {fill: "lightskyblue"}),
+            jo("HyperlinkText",
+                function (node) {
+                    return "http://127.0.0.1:5000/saved/" + node.data.id;
+                },
+                function (node) {
+                    return "Titel: " + node.data.title;
+                },
+                {margin: 10,
+                scale:1.4}
+            )
+        );
+
+    neuesDiagramm.addDiagramListener("Modified", function(e) {
+    var button = document.getElementById("savior");
+    if (button) button.disabled = !neuesDiagramm.isModified;
+    var idx = document.title.indexOf("*");
+    if(!neuesDiagramm.model.nodeDataArray == []) {
+    setTimeout(sendData, 14000);
+    if (neuesDiagramm.isModified) {
+      if (idx < 0) document.title += "*";
+    } else {
+      if (idx >= 0) document.title = document.title.slice(0, idx);
+    }}});
+
+
+function modaler() {
+    var modal=document.getElementById("exampleModal").attributes;
+    console.log("$('#exampleModal').showModal()");
+    console.log(modal[5]);
+    if(modal[5] == 'aria-hidden="true"') {       $('#exampleModal').modal('hide');
+}
+    else {$('#exampleModal').modal('show');}
+}
+
+function diaTemp(einnummer) {
+
+    if(kurzDiagramm) {kurzDiagramm.div=null;}
+    kurzDiagramm=null;
+
+
+kurzDiagramm = jo(go.Diagram, 'tempDia');
+
+
+
+kurzDiagramm.nodeTemplate=        jo(go.Node, "Auto",
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          {
+            locationSpot: go.Spot.TopLeft
+          },
+            jo(go.Shape, "Ellipse", {fill: "lightskyblue"}),
+            jo("HyperlinkText",
+                function (node) {
+                    return "http://127.0.0.1:5000/saved/" + node.data.id;
+                },
+                function (node) {
+                    return "Titel: " + node.data.title;
+                },
+                {margin: 10,
+                scale:1.4}
+            )
+        );
+fetchdiar(einnummer);
+
+}
+
+        neuesDiagramm.nodeTemplateMap.get("").contextMenu=
+  jo("ContextMenu",
+             jo("ContextMenuButton",
+             jo(go.TextBlock, "Toggle"),
+                 {click:function(e,obj){
+                                         console.log("obj.part.data");
+
+
+                    console.log(obj.part.data.id);
+                     modaler();
+                    diaTemp(parseInt(obj.part.data.id));
+                 }}));
+
+
+       neuesDiagramm.contextMenu =
+    jo("ContextMenu",
+
+             jo("ContextMenuButton",
+            jo(go.TextBlock, "Neue Node"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { knotenfarbe: "green", hauptInfo: "mehr Info", scale:"1.0",scaleZu:"1.0",
+                //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
+                textfarbe:"white", hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften",
+                info: [{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}]};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten');}}),
+
+             jo("ContextMenuButton",
+            jo(go.TextBlock, "Neuer Logik-Knoten"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var logiKnoten = { color:"white", qwo:"eh", scale:"1.0", category:"logiktemplate", visible:true, visand:true, visor:false,visiff:false,vispim:false,visimp:false,visall:false, visex:false};
+        //
+            d.model.addNodeData(logiKnoten);
+            part = d.findPartForData(logiKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten')
+            }}),
+      // no binding, always visible button:
+      jo("ContextMenuButton",
+        jo(go.TextBlock, "Neue Unklarheit"),
+        { click: function(e, obj) {
+          e.diagram.commit(function(d) {
+            var data = {scale:"1.0",symbolfarbe:"green",color:"red",wa: " ",frage:"Frage oder Unklarheit", antwort:"Eine ErklärungErklärungErklärungErklärungErklärung", category:"helptemplate", hauptInfo:"nicht leer", visible:true};
+            d.model.addNodeData(data);
+            part = d.findPartForData(data);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+          }, 'new node');
+        } }),
+
+
+        jo("ContextMenuButton",
+            jo(go.TextBlock, "Neuer Kommentar"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { qwa:"so", scale:"1.0", category:"kommentar",color:"yellow",text:"Ergänzend:",expand:false, klein: true};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten');}}),
+        jo("ContextMenuButton",
+            jo(go.TextBlock, "Neue Idee"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { symbolfarbe: "yellow", qwer:"q",scale:"1.0", category:"idea",color:"green",text:"Geistesblitz!"};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neuer Allesknoten');}}),
+
+        jo("ContextMenuButton",
+        jo(go.TextBlock, "Redo"),
+        { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
+        new go.Binding("visible", "", function(o) {
+            return o.diagram.commandHandler.canRedo();}).ofObject()),
+                                         jo("ContextMenuButton",
+            jo(go.TextBlock, "Neue Gruppe"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = { category: "detailGruppe",isGroup:"True", group:"", color:"yellow", visible:"True", auf:"True", zu:"False",
+                restInfo:"Definition oder Eigenschaften", textfarbe:"white", scale:1,
+                info: [{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}], knotenfarbe:"green"};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neue Gruppe');}}),
+
+              jo("ContextMenuButton",
+        jo(go.TextBlock, "Undo"),
+        { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
+        new go.Binding("visible", "", function(o) { return o.diagram.commandHandler.canUndo();}).ofObject()),
+      jo("ContextMenuButton",
+        jo(go.TextBlock, "Redo"),
+        { click: function(e, obj) { console.log(e.diagram.toString())} },
+        new go.Binding("text", "", function(o) {
+            return o.diagram.commandHandler.canRedo();}).ofObject()));
+        fetchdia();
+    }

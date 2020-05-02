@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block content %}
+    <p id="counter" style="display:none">0</p>
+
+    <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='HyperlinkText.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='GeometryReshapingTool.js') }}> </script>
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+
+
+
+    <p id="modellanzahl" style="display:none">1</p>
+    <h1 style="margin-top:3%; margin-left:2%">
+        {%   if title %}
+                  {{ title}}</h1>
+                {% else  %}
+                Unbenanntes Modell</h1>
+                {% endif %}
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="schicktJSONanURL();" style="position:absolute; left: 50%; top:7%;" >
+
+            <div id="Diagramm0" style="background-color:green; position:relative;left:5%;width:90vw;height:80vh;border:2px solid whitesmoke;"></div>
+               <div id="anfang"></div>
+
+
+                    <script>
+                      /*  var title = document.getElementById("data").innerText;
+                        var id = document.getElementById("id").innerText;
+                        var o = document.getElementById("counter").innerText;
+                    var neuEintrag = {"title": title, "id":id};
+                    yps.push(neuEintrag);
+                    if(o == 0) {
+
+                    }
+                        var anker = document.getElementById("anfang");
+                    var node = document.createElement("p");
+                   // var textnode = document.createTextNode("dies");
+                    node.id = "hallo";
+                    if (document.getElementById("hallo")) {console.log("hurra")}
+                     //anker.appendChild(node);
+                  //document.getElementById("Diagramm").id = "Diagramm"+o;
+
+
+                  o=parseInt(o);
+                  console.log(o);
+                  o=o+1;  o.toString();
+                  document.getElementById("counter").innerText = o;
+
+
+                var title = document.getElementById("data");
+                var id = document.getElementById("id");
+                title.remove();
+                id.remove(); */
+                    </script>
+
+
+              <script>
+
+
+              </script>
+
+          </div>
+        <p></p>
+            </article>
+
+    <script>
+
+
+    function modellbearbeitung() {
+        var ma = document.getElementById("mehrChildren");
+      var a = document.createElement('a');
+      var linkText = document.createTextNode("Bearbeiten");
+      a.appendChild(linkText);
+      a.title = "Modell bearbeiten";
+      a.class="nav-item nav-link";
+      a.style="position:absolute; left:50%;";
+      a.href = window.location.href+"/1";
+
+      ma.appendChild(a);
+
+
+    }
+    function getJSON(){
+        var thisid = window.location.href.toString();
+        thisid = thisid.substring(thisid.lastIndexOf("/")+1,thisid.length);
+        console.log(thisid);
+        thisid=parseInt(thisid);
+
+
+    let request = new XMLHttpRequest();
+    request.open("GET", url="/saved/"+thisid);
+    request.setRequestHeader("Content-Type", "application/json");
+    request.addEventListener('load', function (event) {
+        if ((JSON).parse(this.responseText)) {
+
+            var model_json = JSON.parse(this.responseText);
+            //console.log(model_json.isJSON());
+
+            if(model_json.nodeDataArray) {
+                var quizdaten = [];
+                console.log(model_json.nodeDataArray);
+                for (e in model_json.nodeDataArray) {
+                    var quizfrage = {'ok':'pragdischnull'};
+                    //quizfrage.ja = e.data.hauptInfo;
+                    if(model_json.nodeDataArray[e].category=="allesSehen") {
+                        quizfrage.ja = 'krobl';
+
+                        if (model_json.nodeDataArray[e].hauptInfo) {
+                            quizfrage.haupt = model_json.nodeDataArray[e].hauptInfo
+                        }
+                        if (model_json.nodeDataArray[e].restInfo) {
+                            quizfrage.rest = model_json.nodeDataArray[e].restInfo;
+                        }
+                        console.log(quizfrage);
+
+
+                    }
+
+
+            }}
+            //zum Debuggen
+            //console.log('Diagramm Data: ');
+            //console.log(model_json);
+            //Stellt sicher, dass das Diagramm initialisiert wurde
+            //läd die Objekttemplates bevor das Modell geladen wird
+
+          //  style_dia();
+
+        } else {
+            console.warn(request.statusText, request.responseText);
+        }
+    });
+    request.send();
+
+                console.log(thisid);
+
+
+
+
+    }
+
+
+
+            document.addEventListener("DOMContentLoaded", function() {
+
+
+                getJSON();
+
+            modellbearbeitung();
+            });
+        </script>
+
+<button id = "butti" type="button" class="btn btn-primary" data-toggle="modal" style="display: none;" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+  <div class="modal-dialog" role="document" >
+      <p id="ident" style="display: none;">0</p>
+    <div class="modal-content" style="position:absolute;left:-126%;width:94vw;height:92vh;top:18%;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Kurzansicht</h5>
+          <div id="tempDia" style="background-color:green; position:inherit;left:-4%;width:100%;height:76vh;margin-top:4%;border:2px solid whitesmoke;">
+
+          </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" style="position:relative; bottom:10px;" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+        <button type="button" id="tempspeichern" style="position:relative; bottom:10px;" class="btn btn-primary" onclick="sendDatar()">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+    <script type="text/javascript" src={{ url_for('static', filename='diagramme.js') }}> </script>
+
+{% endblock content %}
