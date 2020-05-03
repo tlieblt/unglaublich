@@ -8,8 +8,6 @@ var Diagramm4;
     var neuesDiagramm;
     var zieher;
     var kurzDiagramm;
-    var autoSpeicherLink;
-var timeOut;
 
 diagramme = [Diagramm0,Diagramm1,Diagramm2,Diagramm3,Diagramm4];
 
@@ -484,27 +482,6 @@ zieher.nodeTemplate =
 
 
 }
-function autoSpeichern() {
-
-    var aqui = window.location.href.toString();
-    wot = aqui.substr(0, aqui.lastIndexOf("/"));
-    wot = parseInt(wot[wot.length - 1]);
-    wot = wot.toString();
-    console.log(wot);
-    if (wot == "NaN") {
-        autoSpeicherLink = window.location.href;
-    }
-    else {wot = aqui.substr(0, aqui.lastIndexOf("/"));
-    autoSpeicherLink = wot;}
-    console.log("der Speicherlink ist: ");
-    console.log(autoSpeicherLink);
-
-    if (timeOut){clearTimeout(timeOut); timeOut=setTimeout(schicktJSONanURL, 34000);}
-    else{timeOut = setTimeout(schicktJSONanURL, 34000);
-    console.log("elsetimeout");}
-
-}
-
 
 
 function sendVerData(welche) {
@@ -516,20 +493,28 @@ function sendVerData(welche) {
     if(welche == "modell") {
         var aqui = window.location.href.toString();
         wot = aqui.substr(0, aqui.lastIndexOf("/"));
-       console.log("wot in modell");
-       console.log(wot);
-        setTimeout(noetig(wot),10000);
-       }
+        console.log(wot);
+        let modelAsJson = neuesDiagramm.model.toJson();
+    // Hier noch mit XMLHttpRequest, später mit Fetch
+        let xhr = new XMLHttpRequest();
+        //let url = `${window.origin}/saved/${model_id}`;  zum Testen noch drin wie folgende
+        xhr.open("POST", wot, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+
+        //console.log('folgendes json file wird geschickt: ');
+        //console.log(modelAsJson.toString());
+        xhr.send(modelAsJson);
+    setTimeout(neuesDiagramm.isModified =false, 14000);}
 
         else if(welche == "modella") {
         var aqui = window.location.href.toString();
         wot = aqui.substr(0, aqui.lastIndexOf("/"));
         wot = parseInt(wot[wot.length-1]);
         wot=wot.toString();
-        console.log(wot);
         if ( wot == "NaN") {
             console.log("das sollte nur auf einmodell zu lesen sein!");
-            setTimeout(noetig(aqui),10000);}
+            warumeinfach();}
         else {
             console.log("das sollte nur auf einmodel// zu lesen sein!");
             sendVerData("modell");
@@ -548,21 +533,16 @@ function sendVerData(welche) {
         //let url = `${window.origin}/saved/${model_id}`;  zum Testen noch drin wie folgende
         xhr.open("POST", wot, true);
         xhr.setRequestHeader("Content-Type", "text/html;charset=UTF-8");
-            xhr.send(derTitel);
-                setTimeout(console.log("shiat"),3000);
-neuesDiagramm.isModified =false;
+        xhr.send(derTitel);
+setTimeout(neuesDiagramm.isModified =false, 14000);
     }
 }
-function noetig(diese){
-    schicktJSONanURL(diese);
-}
-
-        function schicktJSONanURL() {
+        function warumeinfach() {
 
     let modelAssJson = neuesDiagramm.model.toJson();
 
-    let ziel = window.location.href.toString();
-     fetch(autoSpeicherLink, {
+
+     fetch(window.location.href, {
          method: "POST",
          body: modelAssJson,
          headers: new Headers({
@@ -573,7 +553,6 @@ function noetig(diese){
 //           console.log('response: ');
 //           console.log(response);
             neuesDiagramm.isModified =false;
-            timeOut=undefined;
             console.log(typeof(response));
             if (response.status !== 200)     {
               //console.log(`Looks like there was a problem. Status code: ${response.status}`);
@@ -747,7 +726,7 @@ function make_dia() {
                 jo(go.Shape, "RoundedRectangle"),
 
 
-            jo(go.TextBlock, "auch mit Text",
+            jo(go.TextBlock, "auch mit Textdsfdgagsdfsfs    ",
             new go.Binding("text", "toText"),
             {
                 editable:true,
@@ -764,8 +743,8 @@ function make_dia() {
         var button = document.getElementById("savior");
     if (button) button.disabled = !neuesDiagramm.isModified;
     var idx = document.title.indexOf("*");
-    if(neuesDiagramm.model.nodeDataArray != []) {
-    autoSpeichern();
+    if(!neuesDiagramm.model.nodeDataArray == []) {
+    setTimeout(sendVerData("modella"), 1000);
     if (neuesDiagramm.isModified) {
       if (idx < 0) document.title += "*";
     } else {

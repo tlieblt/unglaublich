@@ -20,21 +20,19 @@
                 Unbenanntes Modell</h1>
                 {% endif %}
         <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="schickFragen();" style="position:absolute; left: 50%; top:7%;" >
-            <div id="allesPaletti" style="background-color:green; position:absolute;left:5%;width:50vw;top:13%;height:80vh;border:2px solid whitesmoke;"></div>
 
-            <div id="dieFrage" style="background-color:green; position:absolute;left:65%;width:30vw;top:13%;height:80vh;border:2px solid whitesmoke;"></div>
+            <div id="dieFrage" style="background-color:green; position:absolute;left:5%;width:90vw;top:18%;height:80vh;border:2px solid whitesmoke;"></div>
                <div id="anfang"></div>
 
 
                     <script>
 
                     function schickFragen() {
-                        console.log(" TODO am besten Fragen mit Fetch schicken! ");
+                        console.log(" TODO am besten Fragen mit Fetch an den Server! ");
                     }
 
 
                         var  dieFrage = new go.GraphObject.make(go.Diagram, 'dieFrage');
-                        var  allesPaletti = new go.GraphObject.make(go.Palette, 'allesPaletti');
 
                         function machdiagramme() {
 
@@ -56,7 +54,8 @@
             jo(go.Panel, "Vertical",
             jo("HyperlinkText",
                 function (node) {
-                    return "http://127.0.0.1:5000/saved/" + parseInt(node.data.id);
+                if(node.data.id == "keine") {return }
+                else {return "http://127.0.0.1:5000/saved/" + parseInt(node.data.id);}
                 },
                 function (node) {
                     return 'Ursprung';
@@ -76,7 +75,6 @@
             ))
         );
 
-              allesPaletti.nodeTemplate= dieFrage.nodeTemplate;
                         }
                     </script>
 
@@ -96,15 +94,25 @@
     function modellbearbeitung() {
         var ma = document.getElementById("mehrChildren");
       var a = document.createElement('a');
-      var linkText = document.createTextNode("Bearbeiten");
+      var linkText = document.createTextNode("Abfrage");
       a.appendChild(linkText);
-      a.title = "Modell bearbeiten";
+      a.title = "Abfrage";
       a.class="nav-item nav-link";
-      a.style="position:absolute; left:50%;";
-      a.href = window.location.href+"/1";
-acc
-      ma.appendChild(a);
+      a.style="font-size:large; position:absolute; left:45%; top:30%";
+      a.href = window.location.href +"/abfrage";
 
+
+        //erweitern führt zum Fragen aus Modell portierung
+      var ab = document.createElement('a');
+      var linkText = document.createTextNode("Erweitern");
+      ab.appendChild(linkText);
+      ab.title = "Erweitern"
+      ab.class="nav-item nav-link";
+      ab.style="font-size:large;position:absolute; left:55%; top:30%";
+      ab.href = window.location.href; //+"/1";
+
+      ma.appendChild(a);
+      ma.appendChild(ab);
 
     }
     function machFragen() {
@@ -112,7 +120,7 @@ acc
 
       allesPaletti.nodes.each(function(e) {
                     var ey = e.part.data;
-                    var quizfrage = {'count': 0, '':0.5, 'id':thisid};
+                    var quizfrage = {'count': 0, 'acc':0.5, 'id':thisid};
                     //quizfrage.ja = e.data.hauptInfo;
                     console.log(ey.data);
                         quizfrage.frage = 'Was wissen sie noch zu:  \n' + ey.frage + '?';
@@ -148,64 +156,51 @@ acc
 
     function getJSON(){
         var thisid = window.location.href.toString();
+        /*
         thisid = thisid.substring(thisid.lastIndexOf("/")+1,thisid.length);
         console.log(thisid);
         thisid=parseInt(thisid);
+return
+         */
 
 
     let request = new XMLHttpRequest();
-    request.open("GET", url="/saved/"+thisid);
+    request.open("GET", url=thisid);
     request.setRequestHeader("Content-Type", "application/json");
     request.addEventListener('load', function (event) {
+        console.log(this.responseText);
+
         if ((JSON).parse(this.responseText)) {
 
             var model_json = JSON.parse(this.responseText);
-            //console.log(model_json.isJSON());
+            console.log(model_json.array[0]);
 
-            if(model_json.nodeDataArray) {
-
-                allesPaletti.model = new go.Model.fromJson(model_json);
-                allesPaletti.nodes.each(function(e) {
-                    if(e.category == "helptemplate" || e.category == "answertemplate" || e.category == "logiktemplate"|| e.category == "idea" || e.category == "kommentar") {
-                        allesPaletti.remove(e);
-                    }
-                    if( e.category == "detailGruppe"  || e.category == "grouptemp" || e.category == "allesSehen" || e.category == "simple" ) {
-
-                        var temp = {};
-                        temp.check="true";
-                        console.log(e.data.key);
-                             temp.frage = e.data.hauptInfo;
-                            temp.antwort= e.data.restInfo;
-                            temp.id=thisid;
-                            if(e.data.info) {temp.info = e.data.info;}
+            if (model_json.array) {
+                for (var i = 0; i < model_json.array.length; i++) {
+                    var co = model_json.array[i];
+                    var zuKnoten = {};
+                    zuKnoten.antwort = co.antwort;
+                    zuKnoten.frage = co.frage;
+                    zuKnoten.acc = co.acc;
+                    zuKnoten.count = co.count;
+                        zuKnoten.id = co.id;
 
 
-                            allesPaletti.startTransaction("Gruppenänderung");
+                    dieFrage.model.addNodeData(zuKnoten);
+                    zuKnoten = {};
 
-
-                        allesPaletti.remove(e);
-
-                            console.log("ungruppiert");
-
-                            console.log(temp);
-
-                            allesPaletti.model.addNodeData(temp);
-                   allesPaletti.commitTransaction("Gruppenänderung");}
-
-                    console.log("e.isGroup");});
-
-                console.log(model_json.nodeDataArray);
-
+                }
             }
+        }
             //zum Debuggen
             //console.log('Diagramm Data: ');
             //console.log(model_json);
             //Stellt sicher, dass das Diagramm initialisiert wurde
             //läd die Objekttemplates bevor das Modell geladen wird
 
-          //  style_dia();
+        //  style_dia();
 
-        } else {
+        else {
             console.warn(request.statusText, request.responseText);
         }
     });
@@ -224,7 +219,7 @@ acc
 
                 machdiagramme();
                 getJSON();
-                machFragen();
+                //machFragen();
 
             modellbearbeitung();
             });

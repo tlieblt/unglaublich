@@ -18,13 +18,15 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(120), nullable=False)
     models = db.relationship('Models', backref="creator", lazy=True)
     verwaltung = db.relationship('Verwaltung', backref="macher", lazy=True)
+    abfrage = db.relationship('Abfrage', backref="fragender", lazy = True)
+
 
     def __repr__(self):
         return f"User('{self.alias}','{self.email}','{self.f_o_s}','{self.title}','{self.id}')"
 
 
 class JsonDict(db.TypeDecorator):
-    #Ermöglicht Abspeichern im JSON Format
+    #Ermöglicht Abspeichern der "JSON" Modelle von GoJS die nicht dem normalen JSON entsprechen
     impl = db.Text
 
     def process_bind_param(self, value, dialect):
@@ -60,3 +62,12 @@ class Verwaltung(db.Model):
 
     def __repr__(self):
         return f"Verwaltung('{self.content}','{self.user_id}',{self.title})"
+
+class Abfrage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(JsonDict)
+    title = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Abfrage('{self.content}','{self.user_id}',{self.title})"

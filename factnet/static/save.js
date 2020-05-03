@@ -1693,7 +1693,7 @@ jo(go.Panel, "Auto",
   var detailGruppe =
          jo(go.Group, "Vertical",
         //{name:"MEHR"},
-                         locator(),
+             locator(),
 
         new go.Binding("text", "category"),
         new go.Binding("scale").makeTwoWay(),
@@ -1751,6 +1751,7 @@ jo(go.Panel, "Auto",
 
         jo(go.Shape, "RoundedRectangle",
             new go.Binding("fill", "knotenfarbe").makeTwoWay(),
+            sizer(),
             {fill:"grey",
             isPanelMain:true,
 
@@ -1977,7 +1978,7 @@ jo(go.Panel, "Vertical",
 
                  jo(go.Panel, "Auto",
         jo(go.Panel, "Auto",
-       sizer(),
+
             {name:"SHAPE",
             margin:30},
         jo(go.Shape, "RoundedRectangle",
@@ -2876,7 +2877,7 @@ function linkDoubleClick(e, obj) {
 }
 //ZweiFunktionen um das Binding der Objektdaten zu vereinfachen
  function locator() {
-        return [
+    return [
           new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
           {
             locationSpot: go.Spot.TopLeft

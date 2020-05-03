@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block content %}
+
+    {% if title %}
+        <title>FactNet - {{ title }}</title>
+            <h1> {{ title }} </h1>
+
+    {% else %}
+        <title>FactNet - Learn something</title>
+            <h1> Abfrage </h1>
+
+    {% endif %}
+
+
+    <div class="container">
+  <div class="page-header">
+    <h1 style=" margin-left:-20px;margin-top:20px;">Flashcard-Lernen</h1>
+  </div>
+    </div>
+    </container>
+
+        <input type="button" id ="savior" class=" btn btn-outline-success" onclick="neueMultiFrage(5)" value="Nächste Frage" style="position:absolute; top:11.5%;left:75%;margin-left:2%; font-size:large;" >
+
+    <container>
+    <form class="container">
+  <div id = "fragenblock" class="form-group row">
+    <label for="Frage" class="col-1 col-form-label" style="font-size:x-large;margin:20px;margin-left:40px; margin-top:6%;">Frage:</label>
+    <div class="col-8">
+      <input type="text" readonly class="form-control-plaintext" id="Frage" style=" font-size:xx-large; margin:20px; margin-left:3%; margin-top:8%;" value="was solln die toofe frache?">
+    </div>
+  </div>
+  <div id = "antwortblock" style="margin-top:4%;" class="form-group row">
+    <label for="Antwort" class="col-1 col-form-label" style="font-size:large;margin:20px;margin-left:40px;">Antwort</label>
+    <div class="col-8">
+      <input class="form-control" id="Antwort" style="font-size:x-large; margin:20px; margin-left:10%;" placeholder="Wo isn des geld geblieben das sie in die Schweiz überwiesen haben?">
+    </div>
+  </div>
+</form>
+</container>
+
+
+    <script>
+    var dasFragenArray;
+
+    function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
+function ueberpruefung() {
+        var winner = document.getElementById("bingo");
+        if (winner.checked == true) {alert("richtig")}
+}
+
+function fragenSortieren(array,nachArt){
+        if(array){
+        var multipleChoice = [];
+        var textFragen = [];
+        for(var i=0;i<array.length;i++) {
+            if (array[i].id == "keine") {
+                textFragen.push(array[i])
+            }
+            else { multipleChoice.push(array[i])}
+        }
+
+        if (nachArt == "multi") { return multipleChoice;}
+        else if (nachArt == "text") {return textFragen;}
+    }}
+
+
+    function neueMultiFrage(i) {
+
+        var uber = document.getElementById("antwortblock");
+        while(uber.firstChild) {
+            uber.removeChild(uber.lastChild);
+        }
+        var zufall=[];
+
+
+        var diff = document.createElement("div");
+        diff.class = "form-check";
+        diff.id = "tempfrage";
+        diff.style = "margin:20px;";
+
+        var richtigerText = document.createElement("input");
+        richtigerText.type = "checkbox";
+        richtigerText.id = "bingo";
+        richtigerText.onclick = function(){ueberpruefung()};
+        richtigerText.style = "margin:4px;";
+
+
+        var richtig = document.createElement("label");
+        richtig.class = "form-check-label";
+        richtig.for = "bingo";
+        richtig.innerText = "die richtige Antwort";
+        richtig.style = "margin:20px;";
+
+        var p = document.createElement("p");
+        var l = document.createTextNode("");
+        p.appendChild(l);
+
+        zufall[0] = [richtigerText, richtig,p]
+        console.log(zufall[0]);
+
+        var dieseFragen = fragenSortieren(dasFragenArray, "text");
+
+
+        console.log(dieseFragen);
+
+
+        for(var j=1; j<i;j++) {
+
+        var falscherText = document.createElement("input");
+        falscherText.type = "checkbox";
+        falscherText.id = "falsch"+j;
+        falscherText.style = "margin:4px";
+        falscherText.onclick= function(){ueberpruefung()};
+
+        var falsch = document.createElement("label");
+        falsch.class = "form-check-label";
+        falsch.for = "falsch"+j;
+        falsch.innerText = "die richtige Antwort... vielleicht";
+        falsch.style = "margin:20px;";
+
+
+        var pe = document.createElement("p");
+        var el = document.createTextNode("");
+
+        pe.appendChild(el);
+
+
+
+        zufall.push([falscherText,falsch,pe]);
+        }
+
+        shuffleArray(zufall);
+        console.log(zufall);
+        for(var c =0; c < zufall.length;c++) {
+            diff.appendChild(zufall[c][0]);
+            diff.appendChild(zufall[c][1]);
+            diff.appendChild(zufall[c][2]);
+        }
+
+
+        uber.appendChild(diff);
+        }
+
+
+
+    function neueTextFrage() {
+
+
+    }
+
+      function getJSON() {
+          var thisid = window.location.href.toString();
+          thisid = thisid.substring(0,thisid.lastIndexOf("/"));
+          thisid = thisid.substring(thisid.lastIndexOf("/") + 1, thisid.length);
+          console.log(thisid);
+          thisid = parseInt(thisid);
+
+          let request = new XMLHttpRequest();
+          request.open("GET", "/diagrammquiz/" + thisid);
+          request.setRequestHeader("Content-Type", "application/json");
+          request.addEventListener('load', function (event) {
+              console.log(this.responseText);
+
+              if ((JSON).parse(this.responseText)) {
+
+                  var model_json = JSON.parse(this.responseText);
+                  console.log(model_json.array[0]);
+
+                  if (model_json.array) {
+                      dasFragenArray = model_json.array
+
+                      /*  for (var i = 0; i < model_json.array.length; i++) {
+                    var co = model_json.array[i];
+                    var zuKnoten = {};
+                    zuKnoten.antwort = co.antwort;
+                    zuKnoten.frage = co.frage;
+                    zuKnoten.acc = co.acc;
+                    zuKnoten.count = co.count;
+                    if (co.id != "keine") {
+                        zuKnoten.id = co.id
+                    }
+                } */
+                  }
+              }
+                  //zum Debuggen
+                  //console.log('Diagramm Data: ');
+                  //console.log(model_json);
+                  //Stellt sicher, dass das Diagramm initialisiert wurde
+                  //läd die Objekttemplates bevor das Modell geladen wird
+
+              //  style_dia();
+
+              else {
+                  console.warn(request.statusText, request.responseText);
+              }
+          });
+          request.send();
+
+          console.log(thisid);
+
+      }
+          document.addEventListener("DOMContentLoaded", function() {
+              getJSON();
+              setTimeout(neueMultiFrage(4), 2000);
+              console.log(dasFragenArray);
+    });
+
+
+
+
+    </script>
+
+{% endblock content %}

@@ -1,14 +1,6 @@
 "use strict";
 /*
-*  Copyright (C) 1998-2020 by Northwoods Software Corporation. All Rights Reserved.
-*/
-
-/*
-* This is an extension and not part of the main GoJS library.
-* Note that the API for this class may change with any version, even point releases.
-* If you intend to use an extension in production, you should copy the code to your own source directory.
-* Extensions can be found in the GoJS kit under the extensions or extensionsTS folders.
-* See the Extensions intro page (https://gojs.net/latest/intro/extensions.html) for more information.
+*  Copyright (C) 1998-2019 by Northwoods Software Corporation. All Rights Reserved.
 */
 
 /**
@@ -30,8 +22,8 @@ function GeometryReshapingTool() {
 
 	var h = new go.Shape();
   h.figure = "Diamond";
-  h.minSize = new go.Size(16, 16);
-  h.fill = "red";
+  h.desiredSize = new go.Size(7, 7);
+  h.fill = "lightblue";
   h.stroke = "dodgerblue";
   h.cursor = "move";
   /** @type {GraphObject} */
@@ -61,7 +53,7 @@ go.Diagram.inherit(GeometryReshapingTool, go.Tool);
 */
 Object.defineProperty(GeometryReshapingTool.prototype, "handleArchetype", {
   get: function() { return this._handleArchetype; },
-  set: function(val) { this._handleArchetype = val; }
+  set: function(val) { this._handleArchetype = value; }
 });
 
 /*
@@ -72,7 +64,7 @@ Object.defineProperty(GeometryReshapingTool.prototype, "handleArchetype", {
 */
 Object.defineProperty(GeometryReshapingTool.prototype, "reshapeObjectName", {
   get: function() { return this._reshapeObjectName; },
-  set: function(val) { this._reshapeObjectName = val; }
+  set: function(val) { this._reshapeObjectName = value; }
 });
 
 /*
@@ -336,10 +328,11 @@ GeometryReshapingTool.prototype.reshape = function(newPoint) {
   shape.geometry = geo;  // modify the Shape
   var part = shape.part;  // move the Part holding the Shape
   part.ensureBounds();
-  if (part.locationObject !== shape && !part.locationSpot.equals(go.Spot.Center)) {  // but only if the locationSpot isn't Center
+  if (!part.locationSpot.equals(go.Spot.Center)) {  // but only if the locationSpot isn't Center
     // support the whole Node being rotated
     part.move(part.position.copy().subtract(offset.rotate(part.angle)));
   }
+  this.updateAdornments(part);  // update any Adornments of the Part
   this.diagram.maybeUpdate();  // force more frequent drawing for smoother looking behavior
 };
 

@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from factnet import app, db, bcrypt
 from factnet.forms import RegistrationForm, LoginForm, AddInfoForm, SaveModelForm
-from factnet.pers import User, Models, Verwaltung
+from factnet.pers import User, Models, Verwaltung, Abfrage
 from flask_login import login_user, logout_user, current_user, login_required
 import json
 import random
@@ -45,6 +45,7 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        #flash('Eingeloggt als ' + current_user.alias, 'success')
         return redirect(url_for('home', title = 'Start'))
     form = LoginForm()
     if form.validate_on_submit():
@@ -151,6 +152,7 @@ def change_model(model_id):
         print("json request im post: ")
         print(request.get_json())  # parse as JSON
         model.content = request.get_json()
+        flash('Änderung gespeichert', 'success')
         db.session.commit()
         print(model.content)
 
@@ -183,8 +185,13 @@ def einmodell(page):
         print("nur get")
         return render_template("diagramme.html", title=ubersicht.title, model=model)
     elif request.method == 'POST' and request.content_type == 'application/json':
+        print(ubersicht.content)
+        print("json request im post: ")
+        print(request.get_json())  # parse as JSON
         ubersicht.content = request.get_json()
+        flash('Änderung gespeichert', 'success')
         db.session.commit()
+        print(ubersicht.content)
         return '', 204
 
     elif request.method == 'POST' and request.content_type == 'text/html;charset=UTF-8':
@@ -208,7 +215,8 @@ def modellbearbeitung(page,dias):
         #models = Verwaltung.query.filter_by(macher=current_user).paginate(page=page, per_page=1)
         model = modell.content
         print(model)
-        response = app.response_class(response=model, status=200, mimetype='application/json')
+        response = app.response_class(response=model, status=200, mimetype='application/'
+                                                                           '')
         return jsonify(model)
 
     elif request.method == "GET":
@@ -263,4 +271,38 @@ def neuesmodell():
 @app.route('/diagrammquiz/<int:di>', methods=['GET', 'POST'])
 @login_required
 def diagrammquiz(di):
-    return render_template("quiz.html")
+    dasQuiz = Abfrage.query.get_or_404(di)
+
+    if request.method == "GET" and request.content_type == 'application/json':
+        return jsonify(dasQuiz.content)
+
+    elif request.method == "GET":
+        return render_template("einquiz.html", title=dasQuiz.title)
+
+
+@app.route('/diagrammquiz/<string:neu>', methods=['GET', 'POST'])
+@login_required
+def neuesquiz(neu):
+    if neu == "neu" and request.method == "GET":
+        #erstellt ein neues Fragenkatalog
+        leer = {'alleFragen':[]}
+        ersterEintrag = Abfrage(fragender=current_user, content=leer, title="Eine Fragensammlung")
+        db.session.add(ersterEintrag)
+        db.session.commit()
+        return redirect(url_for('diagrammquiz/', di=ersterEintrag.id))
+
+    elif neu == "mach" and request.method == "POST" and request.content_type == 'application/json':
+        #wenn ein ganzes Modell in Fragen umgewandelt werden soll
+        ersterEintrag = Abfrage(fragender=current_user, content=request.get_json(), title="Eine Fragensammlung")
+
+        return redirect(url_for('diagrammquiz/', di=ersterEintrag.id))
+
+
+@app.route('/diagrammquiz/<int:die>/<string:abfrage>', methods=['GET', 'POST'])
+@login_required
+def abfragen(abfrage, die):
+    if abfrage == "abfrage":
+        dasQuiz = Abfrage.query.get_or_404(die)
+
+        if request.method == "GET":
+            return render_template("abfrage.html", title=dasQuiz.title)
