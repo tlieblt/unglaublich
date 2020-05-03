@@ -1,5 +1,10 @@
 # unglaublich
-Änderungen zu 8.0:
+Changelog: 
+Diagrammverwaltung läuft soweit stabil  
+Karteikartenlernfunktion steckt noch in den Kinderschuhen könnte aber noch fertig werden  
+  
+
+Änderungen zu 0.8:
 HTML-Aufbau verändert   
   
 GoJS stürzte beim Einklappen von gruppierten Graphobjekten ab, wenn ein Binding für die Scale existiert.
