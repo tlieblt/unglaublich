@@ -34,7 +34,7 @@
     </script>
         <input id="titelversender" type="button" class=" btn-sm btn-outline-success" value="Titel ändern" onclick="sendVerData('titel');  document.getElementById('titelversender').style.visibility='hidden';" style="visibility:hidden; position:relative; margin-left: 0.2%; font-size: 12px;" >
 
-        <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="sendVerData('modell')" style="position:absolute; left: 52%; top:10%;" >
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="sendVerData('modell')" style="position:absolute; left: 50%; top:10%;" >
             <div id="Diagramm0" style="background-color:green; position:absolute;left:1%;width:60vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
                 <div id="Palette" style="background-color:green; position:absolute;left:65%;width:30vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
 
@@ -105,6 +105,9 @@
           console.log(styl[0]);
           styl[0] = parseInt(styl[0]);
           styl[0] += linkposi;
+          if (parseInt(link.innerText)  >= 100 ) {styl[0]-=1;
+          linkposi -=1;
+          }
           link.style.right=styl[0].toString()+"%";
 
                     link.id="smarterLink"+linkposi;
@@ -175,7 +178,7 @@
 
 
         {% else %}
-          <a id= "dummerlink" style="position: absolute; top: 10%;right:15%;" class= "btn btn-outline-info " >{{ page_num }}</a>
+          <a id= "dummerlink" style="position: absolute; top: 10%;right:20.5%;" class= "btn btn-outline-info " >{{ page_num }}</a>
                 <script> belebeLinks();</script>
 
         {% endif %}

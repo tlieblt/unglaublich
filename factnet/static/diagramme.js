@@ -116,7 +116,7 @@ function make_dias() {
   diagramme[i]= jo(go.Diagram, `Diagramm${i}`, {
         //isEnabled: false,
 //        initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
-   scale:1
+   scale:0.6
     });
 
 
@@ -203,7 +203,7 @@ function make_dias() {
                 jo(go.Shape, "RoundedRectangle"),
 
 
-            jo(go.TextBlock, "auch mit Textdsfdgagsdfsfs    ",
+            jo(go.TextBlock, "auch mit Text",
             new go.Binding("text", "toText"),
             {
                 editable:true,
@@ -483,7 +483,7 @@ zieher.nodeTemplate =
         var knoten = {"title": tl, "id": d,"color": "lightskyblue"};
     zieher.model.addNodeData(knoten)}
 
-    zieher.scale=0.9;
+    zieher.scale=0.8;
 //    zieher.centerRect(new go.Rect(330,-100,300,800));
 
 
@@ -629,6 +629,9 @@ function make_dia() {
         "grid.visible": true,
         "grid.gridCellSize": new go.Size(25, 25),
     });
+
+    neuesDiagramm.toolManager.mouseMoveTools.insertAt(0, new LinkLabelOnPathDraggingTool());
+
     neuesDiagramm.scrollMode = go.Diagram.InfiniteScroll;
 
     neuesDiagramm.groupTemplate=
@@ -736,7 +739,7 @@ function make_dia() {
                 jo(go.Shape, "RoundedRectangle"),
 
 
-            jo(go.TextBlock, "auch mit Textdsfdgagsdfsfs    ",
+            jo(go.TextBlock, "auch mit Text",
             new go.Binding("text", "toText"),
             {
                 editable:true,
@@ -807,7 +810,7 @@ function diaTemp(einnummer) {
 
         //Eventuell im Html Document unsichtbar den Punkt zwischenspeichern und von "außen" die initialPosition setzen!
         //initialPosition: new go.Point(parseFloat(modelCenter[0])-960,parseFloat(modelCenter[1])),
-        scale:0.5,
+        scale:0.2,
 
 
           });
@@ -1142,7 +1145,7 @@ function diaTemp(einnummer) {
                     overflow: go.TextBlock.OverflowClip,
                     isMultiline:true,
                     width:730,
-                    font:"22pt Andale Mono serif ",
+                    font:"30pt Andale Mono serif ",
 
                     wrap: go.TextBlock.WrapDesiredSize,
                     stroke:"lightgoldenrodyellow",
@@ -1599,50 +1602,7 @@ var lili =
               stroke: "orange",
               maxSize: new go.Size(180, NaN)
             })),
-jo(go.Panel, "Vertical",
-                    jo(go.Panel, "Auto",
-                        {scale:2,
-                            visible:false,
-                            segmentIndex:NaN,
-                    segmentFraction: 0.5
-                },
-                jo(go.Shape, "RoundedRectangle",
-                    {fill:"white"}),
-                        jo(go.Shape, "LogicAnd",
-                            new go.Binding("visible","visand").makeTwoWay(),
-                            {stroke:"black",
-                                margin:20,
-                            strokeWidth:10}),
 
-                        jo(go.Shape, "LogicOr",
-                            new go.Binding("visible","visor").makeTwoWay(),
-                            {stroke:"black",
-                                                                margin:20,
-
-                            strokeWidth:10}),
-                        jo(go.Shape, "Arrow",
-                            new go.Binding("visible","visimp").makeTwoWay(),
-                            {stroke:"black",
-                                                                margin:20,
-
-                            strokeWidth:10}),
-                        jo(go.Shape, "DoubleEndArrow",
-                            new go.Binding("visible","visiff").makeTwoWay(),
-                            {stroke:"black",
-                                                                margin:20,
-
-                            strokeWidth:10}),
-                        jo(go.Shape, "Arrow",
-                            new go.Binding("visible","vispim").makeTwoWay(),
-                            {stroke:"black",
-                                angle:180,
-                                                                margin:20,
-
-                            strokeWidth:10})
-
-
-
-                        )),
 
 
 
@@ -1659,7 +1619,7 @@ jo(go.Panel, "Vertical",
                 jo(go.Shape, "RoundedRectangle"),
 
 
-            jo(go.TextBlock, "auch mit Textdsfdgagsdfsfs    ",
+            jo(go.TextBlock, "auch mit Text",
             new go.Binding("text", "toText"),
             {
                 editable:true,
@@ -2955,28 +2915,6 @@ kurzDiagramm.linkTemplateMap = linktemplateMap;
             jo("ContextMenuButton",
             jo(go.TextBlock, "Textfeld kleiner"),
             { click: function(e, obj) { newSizeChange(obj, 0.96); } }),
-            jo("ContextMenuButton",
-            jo(go.TextBlock, "Link breiter"),
-            { click: function(e, obj) {e.diagram.model.startTransaction("sw link");
-
-            console.log(obj.part.data);
-            let neu = parseFloat(obj.part.data.linkbreite);
-            console.log(neu);
-            console.log(obj.part.data.linkbreite);
-            if(!obj.part.data.linkbreite) {neu = 0.0}
-
-            console.log(neu);
-
-            neu=neu+1.0;
-
-            console.log(typeof(neu));
-            neu = neu.toString();
-            console.log(typeof(neu));
-            console.log(neu);
-
-            e.diagram.model.setDataProperty(obj.part.data, "linkbreite", neu);
-            e.diagram.model.commitTransaction("sw link");
-            } }),
           jo("ContextMenuButton",
             jo(go.TextBlock, "Linkkategorie wechseln"),
             { click: function(e, obj) {
@@ -2991,7 +2929,7 @@ kurzDiagramm.linkTemplateMap = linktemplateMap;
             } }));
 
 
-                                kurzDiagramm.linkTemplateMap.get("lili").contextMenu=
+                kurzDiagramm.linkTemplateMap.get("lili").contextMenu=
         jo("ContextMenu",
           jo("ContextMenuButton",
             jo(go.TextBlock, "Linkkategorie wechseln"),
@@ -3132,10 +3070,10 @@ kurzDiagramm.linkTemplateMap = linktemplateMap;
         kurzDiagramm.nodeTemplateMap.get("allesSehen").contextMenu=
             jo("ContextMenu",
               jo("ContextMenuButton",
-                jo(go.TextBlock, "Bigger"),
+                jo(go.TextBlock, "Größer"),
                 { click: function(e, obj) { newSizeChange(obj, 1.11); } }),
               jo("ContextMenuButton",
-                jo(go.TextBlock, "Smaller"),
+                jo(go.TextBlock, "Kleiner"),
                 { click: function(e, obj) { newSizeChange(obj, 0.92); } }),
               jo("ContextMenuButton",
                 jo(go.TextBlock, "Copy"),
@@ -3152,10 +3090,10 @@ kurzDiagramm.linkTemplateMap = linktemplateMap;
         kurzDiagramm.nodeTemplateMap.get("idea").contextMenu=
             jo("ContextMenu",
               jo("ContextMenuButton",
-                jo(go.TextBlock, "Bigger"),
+                jo(go.TextBlock, "Größer"),
                 { click: function(e, obj) { newSizeChange(obj, 1.08); } }),
               jo("ContextMenuButton",
-                jo(go.TextBlock, "Smaller"),
+                jo(go.TextBlock, "Kleiner"),
                 { click: function(e, obj) { newSizeChange(obj, 0.95); } }),
                               jo("ContextMenuButton",
                   jo(go.TextBlock, "Ausgruppieren"),
@@ -3302,7 +3240,7 @@ fetchdiar(einnummer);
 function zentrierAlles(e,obj){
                kurzDiagramm.centerRect(new go.Rect(e.documentPoint.x+0,e.documentPoint.y+100, 0,0));
                console.log(obj.part.data.info);
-               neuesDiagramm.scale=0.8;
+               neuesDiagramm.scale=0.6;
 }
 
 

@@ -53,11 +53,8 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             flash('Sie sind als '+ user.alias +' eingeloggt!', 'success')
             login_user(user, remember=form.remember.data)
-            dest = request.args.get('next')
-            if dest:
-                return redirect(url_for(dest[1:]))
-            else:
-                return redirect(url_for('main', title = 'Start'))
+            return render_template('main.html', title = 'Start')
+
         else:
             flash('Login fehlgeschlagen, bitte Email und Passwort überprüfen!', 'danger')
     return render_template('login.html', title='Login', form=form)

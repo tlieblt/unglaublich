@@ -19,7 +19,7 @@
             <h1 class="mt-8" style="position:relative; margin-left: 2%; margin-top:5%;">Modelle von {{ user.alias }} ({{ models.total }})</h1>
 
     <input style="position:absolute; top:12%;left:60%;margin-left:2%; font-size:large;" type="text" placeholder="Neues Modell" id="elTitel">
-    <input type="button" id ="savior" class=" btn btn-outline-success" onclick="neuetmodell()" value="Erstellen" style="position:absolute; top:11.5%;left:75%;margin-left:2%; font-size:large;" >
+    <input type="button" id ="savior" class=" btn btn-outline-success" onclick="neuetmodell()" value="Erstellen" style="position:absolute; top:11.5%;left:75.5%;margin-left:2%; font-size:medium;" >
 
     {% for model in models.items %}
         <article class="media content-section rounded" style="margin:2%">
@@ -114,7 +114,7 @@
 
 
         {% else %}
-          <a id= "dummerlink" style="position: absolute; top: 12%;right:13%;" class= "btn btn-outline-info " >{{ page_num }}</a>
+          <a id= "dummerlink" style="position: absolute; top: 11.5%;right:13%;" class= "btn btn-outline-info " >{{ page_num }}</a>
                 <script> belebeLinks();</script>
 
         {% endif %}
