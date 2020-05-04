@@ -40,8 +40,24 @@
     <div class="anfang">
         <div id="mainDiagram" style="margin-top: 0px;position:absolute;top:18%;left:2   %;width:96vw;height:82vh;border:2px solid whitesmoke;background-color:#30403f;"></div>
     </div>
-    <div id="derInspektor" class="inspector" style="position:absolute; top:12%;left:68%; width:0vh;">
+    <div id="derInspektor" class="inspector" style="position:absolute; top:5%;left:90%; width:0vh;">
     </div>
+
+    <script>
+        function farbbearbeitung() {
+        var ma = document.getElementById("mehrChildren");
+      var a = document.getElementById("derInspektor");
+        ma.appendChild(a);
+
+    }
+            document.addEventListener("DOMContentLoaded", function() {
+                farbbearbeitung();
+                //inspectore();
+
+            });
+
+    </script>
+
 
 <script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
 <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>

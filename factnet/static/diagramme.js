@@ -12,6 +12,16 @@ var Diagramm4;
 diagramme = [Diagramm0,Diagramm1,Diagramm2,Diagramm3,Diagramm4];
 
 
+function autoSpeichern2() {
+        setTimeout(timeoutProblem2, 30000);
+}
+
+function timeoutProblem2() {
+    autoSpeichern2();
+    if (neuesDiagramm.isModified) {sendVerData('modella');}
+}
+
+
 diagramme_fertig = false;
 function getDiagramData(id, diagramm) {
     let request = new XMLHttpRequest();
@@ -505,7 +515,7 @@ function sendVerData(welche) {
         //console.log('folgendes json file wird geschickt: ');
         //console.log(modelAsJson.toString());
         xhr.send(modelAsJson);
-    setTimeout(neuesDiagramm.isModified =false, 14000);}
+    neuesDiagramm.isModified =false;}
 
         else if(welche == "modella") {
         var aqui = window.location.href.toString();
@@ -534,7 +544,7 @@ function sendVerData(welche) {
         xhr.open("POST", wot, true);
         xhr.setRequestHeader("Content-Type", "text/html;charset=UTF-8");
         xhr.send(derTitel);
-setTimeout(neuesDiagramm.isModified =false, 14000);
+neuesDiagramm.isModified =false;
     }
 }
         function warumeinfach() {
@@ -744,7 +754,7 @@ function make_dia() {
     if (button) button.disabled = !neuesDiagramm.isModified;
     var idx = document.title.indexOf("*");
     if(!neuesDiagramm.model.nodeDataArray == []) {
-    setTimeout(sendVerData("modella"), 1000);
+    //setTimeout(sendVerData("modella"), 1000);
     if (neuesDiagramm.isModified) {
       if (idx < 0) document.title += "*";
     } else {

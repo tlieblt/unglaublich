@@ -10,6 +10,15 @@ if(document.getElementById("Zentrum")){
 }
 
 
+function autoSpeichern() {
+        setTimeout(timeoutProblem, 30000);
+}
+
+function timeoutProblem() {
+    autoSpeichern();
+    if (neuesDiagramm.isModified) {sendData();}
+}
+
 
 // Inhalt von HTML Elementen mit Enter abschicken
 var modellInfo = document.getElementById("dieInfo");
@@ -252,7 +261,6 @@ function make_dia() {
     return neuesDiagramm;
   });
 
-
             //Diagrammlistener der bei Änderungen die Speicherfunktion ermöglicht
             // und nach 34 Sekunden autospeichert
 neuesDiagramm.addDiagramListener("Modified", function(e) {
@@ -260,7 +268,6 @@ neuesDiagramm.addDiagramListener("Modified", function(e) {
     if (button) button.disabled = !neuesDiagramm.isModified;
     var idx = document.title.indexOf("*");
     if(!neuesDiagramm.model.nodeDataArray == []) {
-    setTimeout(sendData, 14000);
     if (neuesDiagramm.isModified) {
       if (idx < 0) document.title += "*";
     } else {
@@ -1751,7 +1758,6 @@ jo(go.Panel, "Auto",
 
         jo(go.Shape, "RoundedRectangle",
             new go.Binding("fill", "knotenfarbe").makeTwoWay(),
-            sizer(),
             {fill:"grey",
             isPanelMain:true,
 
@@ -1772,7 +1778,7 @@ jo(go.Panel, "Auto",
 
 jo(go.Panel, "Vertical",
         jo(go.Panel, "Vertical",
-            {alignment:new go.Spot(0,0.5,0,0)},
+
 
                    jo(go.TextBlock,
                        new go.Binding("text","hauptInfo").makeTwoWay(),
@@ -2700,7 +2706,7 @@ neuesDiagramm.linkTemplateMap = linktemplateMap;
             jo(go.TextBlock, "Neue Gruppe"),
             {click: function(e,obj){
             e.diagram.commit(function(d) {
-                var neuerKnoten = { category: "detailGruppe",isGroup:"True", group:"", color:"yellow", visible:"True", auf:"True", zu:"False",
+                var neuerKnoten = { hauptInfo:"Eine Gruppe", category: "detailGruppe",isGroup:"True", group:"", color:"yellow", visible:"True", auf:"False", zu:"True",
                 restInfo:"Definition oder Eigenschaften", textfarbe:"white", scale:1,
                 info: [], knotenfarbe:"green"};
         //
@@ -2756,6 +2762,7 @@ neuesDiagramm.linkTemplateMap = linktemplateMap;
                 { click: function(e, obj) { e.diagram.model.setDataProperty(obj.part.data, "group", "") }}
                 ));
 
+        autoSpeichern();
 }
 /*
 
