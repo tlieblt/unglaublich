@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% block content %}
+    <p id="counter" style="display:none">0</p>
+     <p style="display:none" id="fragenid"> {{ quizid }}</p>
+         <p style="display:none" id="modellid"> {{ modellid }}</p>
+
+    <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='HyperlinkText.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='GeometryReshapingTool.js') }}> </script>
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+
+
+
+    <h1 style="margin-top:50px; margin-left:2%">
+        {%   if title %}
+                  {{ title}}</h1>
+                {% else  %}
+                Unbenanntes Modell</h1>
+                {% endif %}
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Ausgewählte Fragen zur Abfrage hinzufügen" onclick="schickFragen();" style="position:absolute; left: 70%; top:8.5%;" >
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Alle Fragen zur Abfrage hinzufügen" onclick="schickAlleFragen()" style="position:absolute; left: 34%; top:8.5%;" >
+
+            <div id="allesPaletti" style="background-color:#30403f; position:absolute;left:5%;width:50vw;top:15%;height:80vh;border:2px solid whitesmoke;"></div>
+
+            <div id="dieFrage" style="background-color:#30403f; position:absolute;left:65%;width:30vw;top:15%;height:80vh;border:2px solid whitesmoke;"></div>
+               <div id="anfang"></div>
+
+
+                    <script>
+
+                    //Konvertiert alle Knoten eines Diagramms zu Fragen und erweitert ein Abfrageobjekt damit
+                    function schickAlleFragen() {
+
+        var neueFragen = {'array':[]};
+        var imdia = allesPaletti.nodes;
+        imdia.each(function(co) {
+
+            var zuKnoten = {};
+            co= co.part.data;
+            zuKnoten.antwort = co.antwort;
+            zuKnoten.frage = co.frage;
+            zuKnoten.acc = 0.0;
+            zuKnoten.count = co.count;
+            zuKnoten.id = co.id;
+            neueFragen.array.push(zuKnoten);
+            zuKnoten={};
+        })
+                neueFragen = JSON.stringify(neueFragen);
+
+                          fetch(window.location.href, {
+         method: "POST",
+         body: neueFragen,
+         headers: new Headers({
+             "content-type": "application/json"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+            location.assign("/diagrammquiz/"+response);
+            if (response.status !== 200)     {
+              return;
+            }
+
+            response.text().then(function (data) {
+            });
+          })
+          .catch(function (error) {
+          });
+
+                    }
+
+
+//Schickt nur die ausgewählten Fragen, die dafür in ein eigenes Diagramm gezogen werden
+                                    function schickFragen() {
+                        var neueFragen = {'array':[]};
+                        var imdia = dieFrage.nodes;
+                        imdia.each(function(co) {
+                            var zuKnoten = {};
+                            co= co.part.data;
+                            zuKnoten.antwort = co.antwort;
+                            zuKnoten.frage = co.frage;
+                            zuKnoten.acc = 0.0;
+                            zuKnoten.count = co.count;
+                            zuKnoten.id = co.id;
+                            neueFragen.array.push(zuKnoten);
+                            zuKnoten={};
+                        })
+
+                    console.log(neueFragen);
+
+                neueFragen = JSON.stringify(neueFragen);
+
+                          fetch(window.location.href, {
+         method: "POST",
+         body: neueFragen,
+         headers: new Headers({
+             "content-type": "application/json"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+             location.assign("/diagrammquiz/"+response);
+
+//           console.log('response: ');
+//           console.log(response);
+            console.log(typeof(response));
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+                console.log("hier die daten aus dem komischen response text ding");
+                console.log(data);
+              //console.log('hier kann noch mehr passieren');
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          }); }
+
+//Initialisiert die Diagramme
+    var  dieFrage = new go.GraphObject.make(go.Diagram, 'dieFrage',
+        {scale:0.5});
+    var  allesPaletti = new go.GraphObject.make(go.Palette, 'allesPaletti',
+                        {scale:0.7});
+
+
+    //Definiert wie die Diagramme Daten anzeigen sollen
+    function machdiagramme() {
+
+
+        dieFrage.nodeTemplate = jo(go.Node, "Auto",
+            jo(go.Shape, "RoundedRectangle",
+                {parameter1:50,
+                    toLinkable:true,
+                    fromLinkable:true,
+                    portId:"",
+                    fromSpot:go.Spot.Center,
+                    toSpot: go.Spot.Center,
+                    fill:"#2A3380"}),
+            jo(go.Panel, "Auto",
+            jo(go.Shape, "RoundedRectangle",
+                {fill: "#4866FF",
+                    parameter1:42,
+                    stroke:"transparent",
+            minSize:new go.Size(140,50)}),
+            jo(go.Panel, "Vertical",
+                {padding:10},
+                jo(go.Panel, "Auto",
+                jo(go.Shape, "RoundedRectangle",
+                    {fill:"red",
+                        alignment:new go.Spot(0,1,0,-32),
+                        minSize:new go.Size(120,30),
+                        opacity:0.5}),
+                jo(go.TextBlock, "Frage: ",
+                    {alignment:new go.Spot(0,0,0,0)}),
+                jo(go.Shape, "Rectangle",
+                    {minSize:new go.Size(1, 20),
+                        maxSize: new go.Size(1, 42),
+                    fill:"transparent", stroke:"transparent"}
+                ),
+                    jo(go.TextBlock,
+            {editable:true,
+            maxSize:new go.Size(200,NaN), margin:10},
+            new go.Binding("text", "frage").makeTwoWay())
+                ),
+                jo(go.Shape, "Rectangle",
+                    {minSize:new go.Size(1, 10),
+                        visible:false,
+                        maxSize: new go.Size(1, 12),
+                    background:"transparent", stroke:"transparent"}
+                ),
+                jo(go.Panel, "Auto",
+                jo(go.Shape, "RoundedRectangle",
+                    {fill:"green",
+                        alignment:new go.Spot(0,1,0,-32),
+                        minSize:new go.Size(120,30),
+                        opacity:0.5}),
+                jo(go.TextBlock, "Antwort: ",
+                    {alignment:new go.Spot(0,0,0,0)}),
+                jo(go.TextBlock,
+                    new go.Binding("text","count"),
+                    {minSize:new go.Size(1, 20),
+                        visible:false,
+                        maxSize: new go.Size(1, 42),
+                    background:"transparent", stroke:"transparent"}
+                ),
+                    jo(go.TextBlock,
+            {editable:true,
+            maxSize:new go.Size(200,NaN), margin:10},
+            new go.Binding("text", "antwort").makeTwoWay())
+                ),
+                jo(go.TextBlock,
+                    new go.Binding("text","acc"),
+
+                    {minSize:new go.Size(1, 10),
+                        visible:false,
+                        maxSize: new go.Size(1, 10),
+                    background:"transparent", stroke:"transparent"}
+                ),
+
+                            jo("HyperlinkText",
+                function (node) {
+                    return '/saved/' + parseInt(node.data.id);
+                },
+                function (node) {
+                    return 'Ursprungsdiagramm';
+                },
+                {margin: 10,
+                scale:1,
+                alignment:go.Spot.BottomCenter}),
+
+
+            ))
+        );
+
+              allesPaletti.nodeTemplate= dieFrage.nodeTemplate;
+                        }
+                    </script>
+
+
+              <script>
+
+
+              </script>
+
+          </div>
+        <p></p>
+            </article>
+
+    <script>
+
+
+    function modellbearbeitung() {
+        var ma = document.getElementById("mehrChildren");
+      var a = document.createElement('a');
+      var linkText = document.createTextNode("Abfrage");
+
+      var ai = window.location.href.toString();
+              var wo = ai.substr(0, ai.lastIndexOf("/"));
+              console.log(wo);
+              wo = wo.substr(0,wo.lastIndexOf("/"));
+            //  wo = wo.substr(0,wo.lastIndexOf("/"));
+            var urlstamm = wo;
+              wo = wo + '/abfrage';
+              console.log(wo);
+
+
+      a.appendChild(linkText);
+      a.title = "Abfrage";
+      a.class="nav-item nav-link";
+      a.style="position:absolute; left:50%; top:28%";
+      a.href =wo;
+
+        //erweitern führt zum Fragen aus Modell portierung
+      var ab = document.createElement('a');
+      var linkText = document.createTextNode("Zurück");
+      linkText.id="zuruecklink";
+
+      ab.appendChild(linkText);
+      ab.title = "zurück"
+      ab.class="nav-item nav-link";
+      ab.style="position:absolute; left:55%; top:28%";
+      ab.href = urlstamm;
+
+      ma.appendChild(ab);
+      ma.appendChild(a);
+
+
+    }
+    var thisid = parseInt(document.getElementById("modellid").innerText.toString());
+
+    //Konvertiert Haupt- und Restinfo zu einem Fragepaar und alle Eigenschaftsblöcke aus einem Diagramm-JSON Objekt zu Frageobjekten
+
+     function machFragen() {
+        quizdaten = [];
+
+
+      allesPaletti.nodes.each(function(e) {
+                    var ey = e.part.data;
+                    var quizfrage = {'count': 0, '':0.5, 'id':thisid};
+                    //quizfrage.ja = e.data.hauptInfo;
+                    console.log(ey.data);
+                        quizfrage.frage = 'Was wissen sie noch zu:  \n' + ey.frage + '?';
+                        console.log(quizfrage.frage);
+                        quizfrage.antwort = ey.antwort;
+                        quizfrage.typ = 'text';
+                    quizdaten.push(quizfrage);
+                    quizfrage = {};
+                if(ey.info) {
+
+                    var quizfrage = {'count': 0, 'acc':0.5, 'id':thisid};
+
+                    for (e in ey.info) {
+                        console.log(quizfrage.frage)
+                        quizfrage.count = 0;
+                        quizfrage.acc = 0.5;
+                        quizfrage.id=thisid;
+                                            quizfrage.frage = 'Was wissen sie noch zu:  \n' + ey.info[e].text + '?';
+
+                        quizfrage.antwort = ey.info[e].mehr[0];
+                        quizfrage.typ = 'mchoice';
+                        quizdaten.push(quizfrage);
+                        quizfrage ={}
+                    }
+                }
+
+
+
+                        console.log(quizdaten);
+            });
+    }
+
+    //Holt sich Diagrammdaten vom Server und macht sie zu Fragen
+ function getJSON(){
+
+    let request = new XMLHttpRequest();
+    request.open("GET", url="/saved/"+thisid);
+    request.setRequestHeader("Content-Type", "application/json");
+    request.addEventListener('load', function (event) {
+        if ((JSON).parse(this.responseText)) {
+
+            var model_json = JSON.parse(this.responseText);
+            //console.log(model_json.isJSON());
+
+            if(model_json.nodeDataArray) {
+
+                allesPaletti.model = new go.Model.fromJson(model_json);
+                allesPaletti.nodes.each(function(e) {
+                    if(e.category == "helptemplate" || e.category == "answertemplate" || e.category == "logiktemplate"|| e.category == "idea" || e.category == "kommentar") {
+                        allesPaletti.remove(e);
+                    }
+                    if( e.category == "detailGruppe"  || e.category == "grouptemp" || e.category == "allesSehen" || e.category == "simple" ) {
+
+
+                        if(e.data.info.length > 0) {
+                              for(var j=0;j<e.data.info.length; j++) {
+
+                                  var tmp = {}
+                                  tmp.frage = e.data.info[j].text;
+                                  tmp.antwort = e.data.info[j].mehr[0];
+                                  tmp.id = thisid;
+                                  tmp.counter = 0;
+                                  tmp.acc = 0;
+
+                                  allesPaletti.startTransaction("Gruppenänderung");
+
+                                  allesPaletti.model.addNodeData(tmp);
+                                  allesPaletti.commitTransaction("Gruppenänderung");
+
+                              }
+                            }
+
+
+                        var temp = {};
+                        console.log(e.data.key);
+                             temp.frage = e.data.hauptInfo;
+                            temp.antwort= e.data.restInfo;
+                            temp.id=thisid;
+                            temp.counter=0;
+                            temp.acc=0;
+
+                        allesPaletti.startTransaction("Gruppenänderung");
+                        allesPaletti.remove(e);
+                        allesPaletti.model.addNodeData(temp);
+                        allesPaletti.commitTransaction("Gruppenänderung");}
+                });
+
+            }
+
+        } else {
+            console.warn(request.statusText, request.responseText);
+        }
+    });
+    request.send();
+    }
+
+
+
+            document.addEventListener("DOMContentLoaded", function() {
+
+                machdiagramme();
+                getJSON();
+                machFragen();
+
+            modellbearbeitung();
+            });
+        </script>
+
+<button id = "butti" type="button" class="btn btn-primary" data-toggle="modal" style="display: none;" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+
+
+
+
+    <script type="text/javascript" src={{ url_for('static', filename='diagramme.js') }}> </script>
+
+{% endblock content %}

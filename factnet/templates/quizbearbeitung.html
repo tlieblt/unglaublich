@@ -1,0 +1,179 @@
+         {% extends "base.html" %}
+{% block content %}
+
+    <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='HyperlinkText.js') }}> </script>
+
+
+    <p style="display:none" id="counter">0</p>
+     <p style="display:none" id="fragenid"> {{ quizid }}</p>
+
+<h3 style="margin-left:20px; margin-top:55px;">Hier kann ein Diagramm ausgewählt werden, </h3>
+    <h3 style="margin-left:20px;">von dem Fragen zu einem Quiz hinzugefügt werden können!</h3>
+
+        <div id="DiaPalette" style=" background-color:#30403f; position:absolute;left:5%;width:90vw;height:80vh;top:20%;border:2px solid whitesmoke;"></div>
+
+
+            <script>
+               function machEintraege() {
+                   var o = document.getElementById("counter").innerText;
+                   o = parseInt(o);
+                   var eid = document.getElementById("id");
+                   var title = document.getElementById("title");
+                   eid.id = "id" + o.toString();
+                   title.id = "title" + o.toString();
+                   console.log(eid);
+                   console.log(title);
+                   if (o < 0) {
+                   }
+
+
+                   o = o + 1;
+                   o.toString();
+                   document.getElementById("counter").innerText = o;
+               }
+
+function mach_frage_palette() {
+
+            var richtigerLink = window.location.href.toString();
+            richtigerLink= richtigerLink.substr(0, richtigerLink.lastIndexOf("/")+1);
+            zieher = go.GraphObject.make(go.Palette, "DiaPalette",
+                {initialPosition: new go.Point(0,-500)},
+                {layout: go.GraphObject.make(go.GridLayout,
+                {sorting: go.GridLayout.Descending,
+
+                spacing:new go.Size(20, 20),
+                    cellSize:new go.Size(200,100),
+                wrappingColumn:6})});
+
+    zieher.nodeTemplate =
+       go.GraphObject.make(go.Node, "Auto",
+            go.GraphObject.make(go.Shape, "RoundedRectangle",
+                {parameter1:50,
+                    toLinkable:true,
+                    fromLinkable:true,
+                    portId:"",
+                    fromSpot:go.Spot.Center,
+                    toSpot: go.Spot.Center,
+                    fill:"#2A3380"}),
+            go.GraphObject.make(go.Panel, "Auto",
+            go.GraphObject.make(go.Shape, "RoundedRectangle",
+                {fill: "#4866FF",
+                    parameter1:42,
+                    stroke:"transparent",
+
+            minSize:new go.Size(140,50)}),
+            go.GraphObject.make("HyperlinkText",
+                function (node) {
+                    return richtigerLink +"erweitern/"+node.data.id;
+                },
+                function (node) {
+                    return node.data.title;
+                },
+                {margin: 10,
+                scale:1.5}
+            ))
+        );
+
+    var ct = parseInt(document.getElementById("counter").innerText)
+    for(var j = 0;j <ct;j++){
+        var tl = document.getElementById("title"+j).innerText;
+        var d = document.getElementById("id"+j).innerText;
+        var knoten = {"title": tl, "id": d,"color": "lightskyblue"};
+    zieher.model.addNodeData(knoten)}
+    zieher.scale=1;
+
+}
+
+    var linkposi =0;
+    function belebeLinks(){
+        var link = document.getElementById("dummerlink");
+
+        if(link) {
+        console.log("BELEBE LINKS");
+        console.log("BELEBE LINKS");
+
+          var kurz = window.location.href.toString();
+          kurz = kurz.substring(0,kurz.lastIndexOf("/"));
+          kurz = kurz + "/" + link.innerText;
+          link.href=kurz;
+
+          var styl = link.style.right;
+          styl= styl.toString().split("%");
+          console.log(styl[0]);
+          styl[0] = parseInt(styl[0]);
+          styl[0] += linkposi;
+          if (parseInt(link.innerText)  >= 100 ) {styl[0]-=1;
+          linkposi -=1;
+          }
+          link.style.right=styl[0].toString()+"%";
+          link.id="smarterLink"+linkposi;
+          linkposi-=3;
+
+    }}
+
+
+    function modellbearbeitung() {
+      var ai = window.location.href.toString();
+      var wo = ai.substr(0, ai.lastIndexOf("/"));
+      var ma = document.getElementById("mehrChildren");
+      var a = document.createElement('a');
+      var linkText = document.createTextNode("Zurück");
+
+      a.appendChild(linkText);
+      a.title = "Zurück";
+      a.class="nav-item nav-link";
+      a.style=" position:absolute; left:50%; top:28%";
+      a.href = wo;
+
+      var ab = document.createElement('a');
+      var linkText = document.createTextNode("Abfrage");
+      ab.appendChild(linkText);
+      ab.title = "Abfrage";
+      ab.class="nav-item nav-link";
+      ab.style=" position:absolute; left:55%; top:28%";
+      ab.href = wo+"/abfrage";
+
+
+      ma.appendChild(a);
+      ma.appendChild(ab);
+
+    }
+
+       document.addEventListener("DOMContentLoaded", function() {
+       mach_frage_palette();
+        modellbearbeitung();
+       });
+              </script>
+
+
+    <div id="anfang"></div>
+    {% for dia in diagramme.items %}
+        <p style="display:none;" id="title">{{ dia.title }}</p>
+        <p style="display:none;" id="id">{{ dia.id }}</p>
+
+
+    <script> machEintraege(); </script>
+    {% endfor %}
+
+
+<div>
+    {% for page_num in diagramme.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+      {% if page_num %}
+        {% if diagramme.page == page_num %}
+
+
+        {% else %}
+          <a id= "dummerlink" style="position: absolute; top: 10%;right:20.5%;" class= "btn btn-outline-info " >{{ page_num }}</a>
+                <script> belebeLinks();</script>
+
+        {% endif %}
+      {% else %}
+      {% endif %}
+    {% endfor %}
+</div>
+
+
+
+
+{% endblock content %}

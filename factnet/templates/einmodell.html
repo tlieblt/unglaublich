@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block content %}
+    <p id="counter" style="display:none">0</p>
+
+    <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='HyperlinkText.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='GeometryReshapingTool.js') }}> </script>
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+
+
+
+    <p id="modellanzahl" style="display:none">1</p>
+    <h1 style="margin-top:50px; margin-left:2%">
+        {%   if title %}
+                  {{ title}}</h1>
+                {% else  %}
+                Unbenanntes Modell</h1>
+                {% endif %}
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="sendVerData('modella')" style="position:relative; margin-left: 50%; margin-top:-50px;" >
+        <input type="button" id ="deletor" class=" btn btn-outline-success" value="Löschen" onclick="deleteModell()" style="position:absolute; top:8%; right:5%;" >
+
+            <div id="Diagramm0" style="background-color:#30403f;position:relative;left:5%;width:90vw;height:80vh;border:2px solid whitesmoke;"></div>
+               <div id="anfang"></div>
+        <p></p>
+
+    <script>
+
+//Navigationslinks hinzufügen
+    function modellbearbeitung() {
+        var ma = document.getElementById("mehrChildren");
+      var a = document.createElement('a');
+      var linkText = document.createTextNode("Erweitern");
+      a.appendChild(linkText);
+      a.title = "Modell erweitern";
+      a.class="nav-item nav-link";
+      a.style="position:absolute; left:50%; top:28%;";
+      a.href = window.location.href+"/1";
+
+      ma.appendChild(a);
+
+
+    }
+
+    //Erstellt das modell und startet Autospeicherschleife
+            document.addEventListener("DOMContentLoaded", function() {
+                make_dia();
+            modellbearbeitung();
+            autoSpeichern2();
+
+            //Passt das Modell seinem Einsatzgebiet an
+
+        neuesDiagramm.contextMenu = "";
+        neuesDiagramm.nodeTemplate.contextMenu =
+        go.GraphObject.make("ContextMenu",
+            go.GraphObject.make("ContextMenuButton",
+                          jo(go.TextBlock, "Ausgruppieren"),
+                { click: function(e, obj) { e.diagram.model.setDataProperty(obj.part.data, "group", "") }}
+                ),
+                 jo("ContextMenuButton",
+             jo(go.TextBlock, "Diagramm einblenden"),
+                 {click:function(e,obj){
+
+                     modaler();
+                    diaTemp(parseInt(obj.part.data.id));
+                 }}));
+
+                neuesDiagramm.contextMenu=
+                  go.GraphObject.make("ContextMenu",
+                  go.GraphObject.make("ContextMenuButton",
+                      go.GraphObject.make(go.TextBlock, "Neue Gruppe"),
+            {click: function(e,obj){
+            e.diagram.commit(function(d) {
+                var neuerKnoten = {isGroup:"True", group:"", text:"Gruppe"};
+        //
+            d.model.addNodeData(neuerKnoten);
+            part = d.findPartForData(neuerKnoten);  // must be same data reference, not a new {}
+            // set location to saved mouseDownPoint in ContextMenuTool
+            part.location = d.toolManager.contextMenuTool.mouseDownPoint;
+                },'neue Gruppe');}}));
+            console.log(neuesDiagramm.contextMenu);
+            });
+
+
+
+//Kleines Easteregg in der Löschenfunktion
+
+    function deleteModell(){
+        var speicherknopf = document.getElementById("deletor");
+        speicherknopf.disabled = true;
+        let timerId = setInterval(() => springKnopf(), 400);
+
+        setTimeout(() => { clearInterval(timerId); knopfloeschend() }, 1699);
+
+            }
+
+
+
+    function knopfloeschend(){
+                var speicherknopf = document.getElementById("deletor");
+
+
+                speicherknopf.style.top = "8%";
+                speicherknopf.style.right = "5%";
+                speicherknopf.disabled = false;
+                speicherknopf.value = "Endgültig löschen ;)?";
+                speicherknopf.onclick = function () {
+                loeschmodll();
+    }}
+
+
+    function springKnopf(){
+        let dltr = document.getElementById('deletor');
+        let x = Math.random()*40+10;
+        let y = Math.random()*4+8;
+        dltr.style.position ="absolute";
+        dltr.style.top=y+"%";
+        dltr.style.right=x+"%";
+
+        console.log(dltr.style.top);
+
+        //dltr.style = "position:absolute; top:"+y+"; left:"+x+";"
+    }
+
+
+
+function loeschmodll(){
+         fetch(window.location.href +'/delete', {
+         method: "POST",
+         headers: new Headers({
+             "content-type": "text/html;charset=UTF-8"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+
+            window.location.assign('/eigenemodelle/1');
+
+//           console.log('response: ');
+           console.log(response);
+
+
+
+            console.log(typeof(response));
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+}
+
+
+
+
+
+
+
+        </script>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+  <div class="modal-dialog" role="document" >
+      <p id="ident" style="display: none;">0</p>
+    <div class="modal-content" style="position:absolute;left:-133%;width:94vw;height:96vh;top:18%;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Kurzansicht</h5>
+          <div id="tempDia" style="background-color:#30403f; position:inherit;left:-2.5%;width:100%;height:76vh;margin-top:4%;border:2px solid whitesmoke;">
+
+          </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" style="position:relative; bottom:10px;" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+        <button type="button" id="tempspeichern" style="position:relative; bottom:10px;" class="btn btn-primary" onclick="sendDatar()">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+    <script type="text/javascript" src={{ url_for('static', filename='diagramme.js') }}> </script>
+
+{% endblock content %}

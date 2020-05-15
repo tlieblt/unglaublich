@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+        <script type="text/javascript" src={{ url_for('static', filename='go-debug.js') }}> </script>
+
+    <script type="text/javascript" src={{ url_for('static', filename='DataInspector.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='GeometryReshapingTool.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
+    <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
+
+
+    <input id="ModelName" style="margin-bottom:1%;margin-top:5%; margin-left:2%; font-size:large;" type="text" onclick="document.getElementById('titelversender').style.display='inline';" value=" {{ diagram_name }}">
+    <input id="titelversender" type="button" class=" btn-sm btn-outline-success" value="Titel ändern" onclick="sendVerData('titel');  document.getElementById('titelversender').style.display='none';" style="display: none; position:relative; margin-left: 0.2%; font-size: 12px;" >
+
+
+        <input class="btn btn-outline-success"id="dieInfo" type="text" placeholder="Neuer Knoten" style="position:relative;margin-left:20px;" >
+
+
+        <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class=" btn btn-outline-success"  placeholder="Suchen" style=" position:relative; margin-left: 180px" autocomplete="off">
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Speichern" onclick="sendData()"style="position:relative; margin-left: 4%;" >
+        <input type="button" id ="deletor" class=" btn btn-outline-success" value="Löschen" onclick="deleteDia()" style="position:relative; margin-left: 14%;" >
+
+
+        <div id="derInspektor" class="inspector" style="position:absolute; left:90%; top:5%;">
+        </div>
+
+</h3>
+
+
+        <div>
+        <div id="mainDiagram" class = "Diagram" style="position:relative; background-color:LightSlateGrey"></div>
+    </div>
+    <script>
+
+        function autoTitel(){
+    var titele= document.getElementById("derTitel");
+    if (titele) {
+    titele.addEventListener("keyup", function (event) {
+        if (event.keyCode != undefined) {
+            if (event.keyCode === 13) {
+                //event.preventDefault();
+                sendVerData("titel");
+                document.getElementById('titelversender').style.visibility='hidden';
+            }
+        }
+    });
+}};
+
+
+    function farbbearbeitung() {
+        var ma = document.getElementById("mehrChildren");
+      var a = document.getElementById("derInspektor");
+        ma.appendChild(a);
+
+    }
+            document.addEventListener("DOMContentLoaded", function() {
+                getDiagramData();
+                farbbearbeitung();
+                autoTitel();
+                //inspectore();
+
+            });
+        </script>
+
+
+
+<script>
+
+//Kleines Easteregg in der Löschenfunktion
+
+    function deleteDia(){
+        var speicherknopf = document.getElementById("deletor");
+        speicherknopf.disabled = true;
+        let timerId = setInterval(() => springKnopf(), 400);
+
+        setTimeout(() => { clearInterval(timerId); knopfloeschend() }, 1699);
+
+            }
+
+
+
+    function knopfloeschend(){
+                var speicherknopf = document.getElementById("deletor");
+
+
+                speicherknopf.style.top = "10%";
+                speicherknopf.style.right = "5%";
+                speicherknopf.disabled = false;
+                speicherknopf.value = "Endgültig löschen ;)?";
+                speicherknopf.onclick = function () {
+                loeschdia();
+    }}
+
+
+    function springKnopf(){
+        let dltr = document.getElementById('deletor');
+        let x = Math.random()*40+10;
+        let y = Math.random()*5+9;
+        dltr.style.position ="absolute";
+        dltr.style.top=y+"%";
+        dltr.style.right=x+"%";
+
+        console.log(dltr.style.top);
+
+        //dltr.style = "position:absolute; top:"+y+"; left:"+x+";"
+    }
+
+
+
+
+
+function loeschdia(){
+         fetch(window.location.href +'/delete', {
+         method: "POST",
+         headers: new Headers({
+             "content-type": "text/html;charset=UTF-8"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+
+            window.location.assign('/erstelltediagramme/1');
+
+//           console.log('response: ');
+           console.log(response);
+
+
+
+            console.log(typeof(response));
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+}
+
+</script>
+
+
+
+
+    </div>
+
+<script type="text/javascript" src={{ url_for('static', filename='save.js') }}> </script>
+    <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
+
+
+
+{% endblock content %}

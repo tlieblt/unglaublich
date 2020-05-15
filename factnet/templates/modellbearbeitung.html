@@ -15,6 +15,8 @@
 
     <p id="modellanzahl" style="display:none">{{ diagramme.total }}</p>
     <input id="derTitel" style="margin-bottom:1%;margin-top:5%; margin-left:2%; font-size:x-large;" type="text" onclick="document.getElementById('titelversender').style.visibility='visible';" value=" {{ title }}">
+    <input type="button" id ="deletor" class=" btn btn-outline-success" value="Löschen" onclick="deleteQuiz()" style="position:absolute;top:10%; right:5%;" >
+
     <script>
     function autoTitel(){
     var titele= document.getElementById("derTitel");
@@ -29,18 +31,16 @@
             }
         }
     });
-}};
+}}
 
     </script>
         <input id="titelversender" type="button" class=" btn-sm btn-outline-success" value="Titel ändern" onclick="sendVerData('titel');  document.getElementById('titelversender').style.visibility='hidden';" style="visibility:hidden; position:relative; margin-left: 0.2%; font-size: 12px;" >
 
         <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="sendVerData('modell')" style="position:absolute; left: 50%; top:10%;" >
-            <div id="Diagramm0" style="position:absolute;left:1%;width:60vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
-                <div id="Palette" style=" position:absolute;left:65%;width:30vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
+            <div id="Diagramm0" style="background-color:lightsteelblue;position:absolute;left:1%;width:60vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
+                <div id="Palette" style="background-color:#30403f; position:absolute;left:65%;width:30vw;height:80vh;top:18%;border:2px solid whitesmoke;"></div>
 
                <script>
-
-               //Objekte vom Server werden in der HTML Struktur zwischengespeichert
                function machEintraege() {
                    var o = document.getElementById("counter").innerText;
                    o = parseInt(o);
@@ -73,14 +73,10 @@
 
     {% endfor %}
 
-          </div>
-        <p></p>
-            </article>
+
 
     <script>
     var linkposi =0;
-    //Positioniert Links und lässt sie auf die richtige Seite zeigen
-
     function belebeLinks(){
         var link = document.getElementById("dummerlink");
 
@@ -120,21 +116,105 @@
 
     }}
 
-    //Navigationselement
     function modellbearbeitung() {
         var ma = document.getElementById("mehrChildren");
       var a = document.createElement('a');
-            var linkText = document.createTextNode("Modellansicht");
+            var linkText = document.createTextNode("Zurück");
       a.appendChild(linkText);
       a.title = "Modellansicht";
       a.class="nav-item nav-link";
-      a.style="position:absolute; left:50%;top:28%";
+      a.style="position:absolute; left:50%; top:28%;";
       a.href = window.location.href.substring(0,window.location.href.lastIndexOf("/"));
     console.log(ma);
       ma.appendChild(a);
     }
 
-//Wenn Seite geladen hat, alles initialisieren
+
+
+
+//Kleines Easteregg in der Löschenfunktion
+
+
+    function deleteModell(){
+        var speicherknopf = document.getElementById("deletor");
+        speicherknopf.disabled = true;
+        let timerId = setInterval(() => springKnopf(), 400);
+
+        setTimeout(() => { clearInterval(timerId); knopfloeschend() }, 1699);
+
+            }
+
+
+
+    function knopfloeschend(){
+                var speicherknopf = document.getElementById("deletor");
+
+
+                speicherknopf.style.top = "10%";
+                speicherknopf.style.right = "5%";
+                speicherknopf.disabled = false;
+                speicherknopf.value = "Endgültig löschen ;)?";
+                speicherknopf.onclick = function () {
+                loeschmodll();
+    }}
+
+
+    function springKnopf(){
+        let dltr = document.getElementById('deletor');
+        let x = Math.random()*40+10;
+        let y = Math.random()*5+9;
+        dltr.style.position ="absolute";
+        dltr.style.top=y+"%";
+        dltr.style.right=x+"%";
+
+        console.log(dltr.style.top);
+
+        //dltr.style = "position:absolute; top:"+y+"; left:"+x+";"
+    }
+
+
+
+
+
+function loeschmodll(){
+         fetch(window.location.href +'/delete', {
+         method: "POST",
+         headers: new Headers({
+             "content-type": "text/html;charset=UTF-8"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+
+            window.location.assign('/eigenemodelle/1');
+
+//           console.log('response: ');
+           console.log(response);
+
+
+
+            console.log(typeof(response));
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+}
+
+
+
+
+
+
+
+
 
     document.addEventListener("DOMContentLoaded", function() {
                 make_dia();
@@ -143,8 +223,15 @@
                 modellbearbeitung();
                 autoSpeichern2();
 
-//Extra Kontextmenü für das Einblenden von Diagrammen und Erstellen von Gruppen in Modellen
+
         neuesDiagramm.contextMenu = "";
+        neuesDiagramm.nodeTemplate.contextMenu =
+        go.GraphObject.make("ContextMenu",
+            go.GraphObject.make("ContextMenuButton",
+                          jo(go.TextBlock, "Ausgruppieren"),
+                { click: function(e, obj) { e.diagram.model.setDataProperty(obj.part.data, "group", "") }}
+                ));
+
         neuesDiagramm.contextMenu=
                   go.GraphObject.make("ContextMenu",
                   go.GraphObject.make("ContextMenuButton",
@@ -160,18 +247,15 @@
                 },'neue Gruppe');}}));
 
 
+
                 });
         </script>
-<button id = "butti" type="button" class="btn btn-primary" data-toggle="modal" style="display: none;" data-target="#exampleModal">
-  Launch demo modal
-</button>
 
-    //Modal in dem ein Diagramm temporär eingeblendet wird
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
   <div class="modal-dialog" role="document" >
       <p id="ident" style="display: none;">0</p>
-    <div class="modal-content" style="position:absolute;left:-133%;width:94vw;height:96vh;top:18%;">
+    <div class="modal-content" style="position:absolute;left:-132%;width:94vw;height:96vh;top:18%;">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Kurzansicht</h5>
           <div id="tempDia" style="background-color:#30403f; position:inherit;left:-2.5%;width:100%;height:76vh;margin-top:4%;border:2px solid whitesmoke;">
@@ -193,7 +277,7 @@
 
 
 
-//Seiten für die nächsten Elemente, werden noch an die richtige Position gebracht
+
 
 
 <div>

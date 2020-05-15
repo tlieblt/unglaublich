@@ -9,23 +9,26 @@
     <script type="text/javascript" src={{ url_for('static', filename='Figures.js') }}> </script>
 
 
-    <h1 id="überschrift">Zeit ein Modell anzulegen!</h1>
+    <h1 id="überschrift">Zeit ein neues Diagramm anzulegen!</h1>
+<div style="position:absolute; top:10%; left:38%;">
+
+    <input class="anfang btn btn-outline-success"id="dieInfo" type="text" placeholder="Neuer Knoten" style="position:absolute; left:-175%; top:-1%" >
+        <!--input type="button" id ="senderino" class="btn btn-outline-success" value="neuer Knoten" onclick="addData()" style="position:relative; bottom:-10%;left:52%;"-->
+
+        <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class="anfang btn btn-outline-success"  placeholder="Suchen" style=" position:relative; left: -65%; top:-1%;" autocomplete="off">
+        <!--input type="button" id ="savior" class=" btn btn-outline-success" value="Suchen" onclick="suchFunktion()" style="position:relative; bottom:-10%;left:30%;"-->
+        <input type="button" id ="savior" class="anfang btn btn-outline-success" value="Speichern" onclick="sendData()" style="position:relative; top:-1%; left:140%;" >
+
 
     <p id="ueber1">
-    <h5 id="ueber2">Wie wollen sie dieses Modell nennen?</h5>
+
+    <h5 id="ueber2">Wie wollen sie dieses Diagramm nennen?</h5>
         <input class="spaeter infoAblegen content-section ml-2"id="derTitel" type="text" placeholder="Modellname" >
         <input type="button" id ="ueber3" class="btn btn-outline-success" value="Diagramm erstellen" onclick="unhide()" >
     </p>
     <p>
 
 
-    <input class="anfang btn btn-outline-success"id="dieInfo" type="text" placeholder="Neuer Knoten" style="position:relative;margin-left:10px;" >
-        <!--input type="button" id ="senderino" class="btn btn-outline-success" value="neuer Knoten" onclick="addData()" style="position:relative; bottom:-10%;left:52%;"-->
-
-        <input type="search" id="diaSuche" onkeypress="if (event.keyCode === 13) suchFunktion()" class="anfang btn btn-outline-success"  placeholder="Suchen" style=" position:relative; margin-left: 250px" autocomplete="off">
-        <!--input type="button" id ="savior" class=" btn btn-outline-success" value="Suchen" onclick="suchFunktion()" style="position:relative; bottom:-10%;left:30%;"-->
-        <input type="button" id ="savior" class="anfang btn btn-outline-success" value="Speichern" onclick="sendData()"style="position:relative; margin-left: 25%;" >
-
 
 
 
@@ -33,6 +36,7 @@
 
 
     </p>
+    </div>
    <!--
     Test ob ausgelesen wird
     <script>function func() {alert(document.getElementById("nInfo").value)}</script> -->

@@ -13,48 +13,164 @@
 
 
     <div class="container">
-  <div class="page-header">
+  <div id = "oben" class="page-header">
+
     <h1 style=" margin-left:-20px;margin-top:20px;">Flashcard-Lernen</h1>
   </div>
     </div>
-    </container>
+        <input type="button" id ="savior" class=" btn btn-outline-success" onclick="neueMultiFrage(5)" value="Nächste Frage" style="position:absolute; top:10%;left:75%;margin-left:2%; font-size:large;" >
 
-        <input type="button" id ="savior" class=" btn btn-outline-success" onclick="neueMultiFrage(5)" value="Nächste Frage" style="position:absolute; top:11.5%;left:75%;margin-left:2%; font-size:large;" >
-
-    <container>
-    <form class="container">
+    <div class="container-fluid">
   <div id = "fragenblock" class="form-group row">
-    <label for="Frage" class="col-1 col-form-label" style="font-size:x-large;margin:20px;margin-left:40px; margin-top:6%;">Frage:</label>
+    <label for="Frage" id="frak" class="col-2 col-form-label" style="position:relative;font-size:large; margin-left:20px; margin-top:2%; visibility: hidden;">Was würden sie: </label>
     <div class="col-8">
-      <input type="text" readonly class="form-control-plaintext" id="Frage" style=" font-size:xx-large; margin:20px; margin-left:3%; margin-top:8%;" value="was solln die toofe frache?">
+      <p type="text" readonly class="form-control-plaintext" id="Frage23" style=" font-size:xx-large; margin:20px; margin-left:3%; margin-top:2%;">Zum Abfragebeginn auf nächste Frage klicken!
+      </p>
     </div>
   </div>
-  <div id = "antwortblock" style="margin-top:4%;" class="form-group row">
-    <label for="Antwort" class="col-1 col-form-label" style="font-size:large;margin:20px;margin-left:40px;">Antwort</label>
-    <div class="col-8">
-      <input class="form-control" id="Antwort" style="font-size:x-large; margin:20px; margin-left:10%;" placeholder="Wo isn des geld geblieben das sie in die Schweiz überwiesen haben?">
+            <label for="Antwort" class="col-1 col-form-label" id= "antw" style="visibility: hidden; font-size:large;">zuordnen: </label>
+
+  <div id = "antwortblock" style="margin-top:1px;" class="form-group row">
+
+    <div class="col-10">
+      <input class="form-control" id="Antwort" style="font-size:x-large; visibility: hidden; margin:20px; margin-left:10%;" placeholder="Wo isn des geld geblieben das sie in die Schweiz überwiesen haben?">
     </div>
   </div>
 </form>
-</container>
+    </div>
 
 
-    <script>
-    var dasFragenArray;
 
-    function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+
+
+
+<script>
+var dasFragenArray;
+var fragenAnzahl=5;
+function shuffleArray(array) {
+for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+}
+
+function rrrichtig() {
+
+
+    var anzeige = document.createElement("div");
+    anzeige.innerText = "Richtig!";
+    anzeige.id = "banner";
+    // die einzelnen Attribute nacheinander wäre übersichtlicher, geht aber nicht
+    anzeige.style = "width:25%; height:10%; opacity:0.82; background-color:green; position:absolute; left:37.5%; top:10%; border: 2px solid green; border-radius:10px; text-align:center; padding:1.5%; font-size:x-large;";
+    var elti = document.getElementById("oben");
+    elti.appendChild(anzeige);
+    document.getElementById("bingo").parentElement.style = "background-color:green; opacity:0.82;border: 2px solid green;border-radius:15px;margin-top:10px;margin-left:5%; width:80vw;  padding:10px;";
+    for(var t=1;t<fragenAnzahl;t++) {
+        let falscheFrage = document.getElementById("falsch"+t).parentElement;
+        falscheFrage.parentElement.removeChild(falscheFrage); }
+
+    let d = parseInt(document.getElementById("bingo").title);
+    document.getElementById("bingo").checked=true;
+        fragewerten(d,0.06);
+        console.log("ich mach das jetzt rrrichtig")
     }
+
+
+
+
+function fragewerten(d,wert) {
+    dasFragenArray[d].acc += wert;
+    dasFragenArray[d].count++;
+    if(dasFragenArray[d].acc < 0) {dasFragenArray[d].acc = 0;}
+    else if(dasFragenArray[d].acc > 1) {dasFragenArray[d].acc = 1;}
+            console.log("jouhouuuui");
+            schickFrage(dasFragenArray[d]);
+        }
+
+
+
+function frageWeiter(){
+
+neueMultiFrage(fragenAnzahl);
+
 }
 
-function ueberpruefung() {
-        var winner = document.getElementById("bingo");
-        if (winner.checked == true) {alert("richtig")}
+
+//Blendet die falschen Antwortmöglichkeitne aus und hebt die richtige hervor
+function falscheFrageAuf() {
+
+var anzeige = document.createElement("div");
+anzeige.innerText = "Das war nicht die richtige Antwort.";
+anzeige.id = "banner";
+// die einzelnen Attribute nacheinander wäre übersichtlicher, will aber nicht
+anzeige.style = "width:28%; height:10%; opacity:0.42; background-color:red; position:absolute; left:36%; top:10%; border: 2px solid red; border-radius:10px; text-align:center; padding:1.5%; font-size:x-large;";
+var elti = document.getElementById("oben");
+elti.appendChild(anzeige);
+document.getElementById("bingo").parentElement.style = "background-color:green; opacity:0.42;border: 2px solid green;border-radius:15px;margin-top:10px;margin-left:5%; width:80vw;  padding:10px;";
+
+let d = parseInt(document.getElementById("bingo").title);
+let link = dasFragenArray[d].id;
+var kontextLink = document.createElement("a");
+kontextLink.href= '/saved/'+ link;
+      var linkText = document.createTextNode("Ursprungsdiagramm");
+
+kontextLink.appendChild(linkText);
+
+kontextLink.style = "position:relative; left:75%; top:-44%;"
+document.getElementById('tempfrage').appendChild(kontextLink);
+
+
+for(var t=1;t<fragenAnzahl;t++) {
+    let falscheFrage = document.getElementById("falsch"+t).parentElement;
+    falscheFrage.parentElement.removeChild(falscheFrage);
+
 }
+}
+
+function fffalsch() {
+let d = parseInt(document.getElementById("bingo").title);
+    fragewerten(d,-0.05);
+
+     falscheFrageAuf();
+        for(var i=0;i<dasFragenArray.length;i++) {
+        console.log(dasFragenArray[i]);
+        }
+
+}
+
+
+
+
+function schickFrage(frage) {
+    frage = JSON.stringify(frage);
+                fetch(window.location.href, {
+     method: "POST",
+     body: frage,
+     headers: new Headers({
+         "content-type": "application/json"
+     })
+    }).then((response) => response.text())
+     .then(function (response) {
+
+    //           console.log('response: ');
+    //           console.log(response);
+        if (response.status !== 200)     {
+          //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+          return;
+        }
+    //    console.log('im response block');
+    //    console.log(response.text());
+
+        response.text().then(function (data) {
+          //console.log('hier kann noch mehr passieren');
+        });
+      })
+      .catch(function (error) {
+      }); }
+
+
 
 function fragenSortieren(array,nachArt){
         if(array){
@@ -72,84 +188,166 @@ function fragenSortieren(array,nachArt){
     }}
 
 
+//Gibt true bei Wiederholung eines Zufallsindex zurück
+function fragenWiederholung(array, zf) {
+        var rueck = false;
+        for(var p = 0; p<array.length; p++) {
+            if(array[p] == zf) {rueck = true}
+        }
+        return rueck;
+
+}
+
+//Erstellt HTML Objekte die Fragen anzeigen
     function neueMultiFrage(i) {
+        if (dasFragenArray.length > 4) {
 
-        var uber = document.getElementById("antwortblock");
-        while(uber.firstChild) {
-            uber.removeChild(uber.lastChild);
+            var wegdamit = document.getElementById("banner")
+            if (wegdamit) {
+                wegdamit.parentElement.removeChild(wegdamit);
+            }
+
+            var gesamt = 0;
+            for (var j = 0; j < dasFragenArray.length; j++) {
+
+                gesamt += dasFragenArray[j].acc;
+            }
+            gesamt = gesamt / dasFragenArray.length;
+            var zufallsindex = Math.floor(Math.random() * dasFragenArray.length);
+            //Stellt sicher, dass Fragen die noch nicht so gut beherrscht werden häufiger gezeigt werden
+            if (parseFloat(dasFragenArray[zufallsindex].acc) - gesamt >= 0.1) {
+                if (Math.random() >= 0.33) {
+                    zufallsindex = Math.floor(Math.random() * dasFragenArray.length);
+                }
+            } else if (parseFloat(dasFragenArray[zufallsindex].acc) - gesamt >= 0) {
+                if (Math.random() >= 0.66) {
+                    zufallsindex = Math.floor(Math.random() * dasFragenArray.length);
+
+                }
+            }
+
+            var frag = document.getElementById("Frage23");
+            frag.innerText = dasFragenArray[zufallsindex].frage;
+            var ant = document.getElementById("antw");
+            var frak = document.getElementById("frak");
+            ant.style.visibility = "visible";
+            frak.style.visibility = "visible";
+
+            var uber = document.getElementById("antwortblock");
+            while (uber.firstChild) {
+                uber.removeChild(uber.lastChild);
+            }
+            var zufall = [];
+
+
+            var diff = document.createElement("div");
+            diff.class = "form-check";
+            diff.id = "tempfrage";
+            diff.style = "margin:10px;";
+
+
+            var richtigDiv = document.createElement("div");
+            richtigDiv.style = "border: 2px solid green;border-radius:15px;margin-top:10px;margin-left:5%; width:80vw;  padding:10px;";
+            // richtigDiv.border="border: 2px solid green;"
+
+            var richtigerText = document.createElement("input");
+            richtigerText.type = "checkbox";
+            richtigerText.id = "bingo";
+            richtigerText.title = zufallsindex.toString();
+            richtigerText.onclick = function () {
+                rrrichtig()
+            };
+            richtigerText.style = "margin:auto";
+
+
+            var richtig = document.createElement("label");
+            richtig.class = "form-check-label";
+            richtig.for = "bingo";
+            richtig.onclick = function () {
+                rrrichtig()
+            };
+            richtig.innerText = dasFragenArray[zufallsindex].antwort.normalize();
+            richtig.style = "position:relative; max-width:70vw; margin:10px;";
+
+
+            var p = document.createElement("div");
+            var l = document.createTextNode("");
+            p.appendChild(richtig);
+
+            richtigDiv.appendChild(richtigerText);
+            richtigDiv.appendChild(richtig);
+
+            zufall[0] = richtigDiv
+            console.log(zufall[0]);
+
+            fragenSortieren(dasFragenArray, "text");
+
+
+            var wiederholung = [zufallsindex];
+            for (var j = 1; j < i; j++) {
+
+                var zf = Math.floor(Math.random() * dasFragenArray.length);
+                if (zf == zufallsindex) {
+                    do {
+                        zf = Math.floor(Math.random() * dasFragenArray.length);
+                        console.log('check endlos');
+                    } while (fragenWiederholung(wiederholung, zf))
+                }
+                wiederholung.push(zf);
+
+                var falschDiv = document.createElement("div");
+                falschDiv.style = "border: 2px solid green;border-radius:15px;margin-top:10px;margin-left:5%; width:80vw;  padding:10px;";
+
+
+                var falscherText = document.createElement("input");
+                falscherText.type = "checkbox";
+                falscherText.id = "falsch" + j;
+                falscherText.style = "margin:auto";
+                falscherText.onclick = function () {
+                    fffalsch()
+                };
+
+                var falsch = document.createElement("label");
+                falsch.class = "form-check-label";
+                falsch.for = "falsch" + j;
+                falsch.onclick = function () {
+                    fffalsch()
+                };
+                falsch.innerText = dasFragenArray[zf].antwort;
+                falsch.style = "position:relative; max-width:70vw; margin:10px;";
+
+
+                var pe = document.createElement("p");
+                var el = document.createTextNode("");
+
+                pe.appendChild(el);
+
+                falschDiv.appendChild(falscherText);
+                falschDiv.appendChild(falsch);
+
+                zufall.push(falschDiv);
+            }
+
+            shuffleArray(zufall);
+            console.log(zufall);
+            for (var c = 0; c < zufall.length; c++) {
+                diff.appendChild(zufall[c]);
+                //   diff.appendChild(zufall[c][1]);
+                //   diff.appendChild(zufall[c][2]);
+            }
+
+
+            uber.appendChild(diff);
+
+
         }
-        var zufall=[];
+        else {
+            document.getElementById("Frage23").innerText  = "Leider nicht genügend Fragen zur sinnvollen Abfrage vorhanden! :( \n Über Erweitern kann Text- und Frageknoten aus den angelegten Diagrammen zu Fragen umwandeln!";
 
-
-        var diff = document.createElement("div");
-        diff.class = "form-check";
-        diff.id = "tempfrage";
-        diff.style = "margin:20px;";
-
-        var richtigerText = document.createElement("input");
-        richtigerText.type = "checkbox";
-        richtigerText.id = "bingo";
-        richtigerText.onclick = function(){ueberpruefung()};
-        richtigerText.style = "margin:4px;";
-
-
-        var richtig = document.createElement("label");
-        richtig.class = "form-check-label";
-        richtig.for = "bingo";
-        richtig.innerText = "die richtige Antwort";
-        richtig.style = "margin:20px;";
-
-        var p = document.createElement("p");
-        var l = document.createTextNode("");
-        p.appendChild(l);
-
-        zufall[0] = [richtigerText, richtig,p]
-        console.log(zufall[0]);
-
-        var dieseFragen = fragenSortieren(dasFragenArray, "text");
-
-
-        console.log(dieseFragen);
-
-
-        for(var j=1; j<i;j++) {
-
-        var falscherText = document.createElement("input");
-        falscherText.type = "checkbox";
-        falscherText.id = "falsch"+j;
-        falscherText.style = "margin:4px";
-        falscherText.onclick= function(){ueberpruefung()};
-
-        var falsch = document.createElement("label");
-        falsch.class = "form-check-label";
-        falsch.for = "falsch"+j;
-        falsch.innerText = "die richtige Antwort... vielleicht";
-        falsch.style = "margin:20px;";
-
-
-        var pe = document.createElement("p");
-        var el = document.createTextNode("");
-
-        pe.appendChild(el);
-
-
-
-        zufall.push([falscherText,falsch,pe]);
         }
+    }
 
-        shuffleArray(zufall);
-        console.log(zufall);
-        for(var c =0; c < zufall.length;c++) {
-            diff.appendChild(zufall[c][0]);
-            diff.appendChild(zufall[c][1]);
-            diff.appendChild(zufall[c][2]);
-        }
-
-
-        uber.appendChild(diff);
-        }
-
-
+//I
 
     function neueTextFrage() {
 
@@ -177,26 +375,9 @@ function fragenSortieren(array,nachArt){
                   if (model_json.array) {
                       dasFragenArray = model_json.array
 
-                      /*  for (var i = 0; i < model_json.array.length; i++) {
-                    var co = model_json.array[i];
-                    var zuKnoten = {};
-                    zuKnoten.antwort = co.antwort;
-                    zuKnoten.frage = co.frage;
-                    zuKnoten.acc = co.acc;
-                    zuKnoten.count = co.count;
-                    if (co.id != "keine") {
-                        zuKnoten.id = co.id
-                    }
-                } */
                   }
               }
-                  //zum Debuggen
-                  //console.log('Diagramm Data: ');
-                  //console.log(model_json);
-                  //Stellt sicher, dass das Diagramm initialisiert wurde
-                  //läd die Objekttemplates bevor das Modell geladen wird
 
-              //  style_dia();
 
               else {
                   console.warn(request.statusText, request.responseText);
@@ -207,11 +388,42 @@ function fragenSortieren(array,nachArt){
           console.log(thisid);
 
       }
+
+//Erstellt Links in der Navigationsleiste
+    function modellbearbeitung() {
+        var ma = document.getElementById("mehrChildren");
+      var a = document.createElement('a');
+      var linkText = document.createTextNode("Zurück");
+
+        var ai = window.location.href.toString();
+        var wo = ai.substr(0, ai.lastIndexOf("/"));
+
+      a.appendChild(linkText);
+      a.title = "Zurück";
+      a.class="nav-item nav-link";
+      a.style=" position:absolute; left:50%; top:28%";
+      a.href = wo;
+
+
+        //erweitern führt zum Fragen aus Modell portierung
+      var ab = document.createElement('a');
+      var linkText = document.createTextNode("Erweitern");
+      ab.appendChild(linkText);
+      ab.title = "Erweitern"
+      ab.class="nav-item nav-link";
+      ab.style="position:absolute; left:55%; top:28%";
+      ab.href = wo +'/1';
+
+      ma.appendChild(a);
+      ma.appendChild(ab);
+
+    }
+
+
           document.addEventListener("DOMContentLoaded", function() {
               getJSON();
-              neueMultiFrage(4);
-              console.log(dasFragenArray);
-    });
+              modellbearbeitung();
+          });
 
 
 

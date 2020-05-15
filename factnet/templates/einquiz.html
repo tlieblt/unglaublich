@@ -10,33 +10,50 @@
     <link rel="stylesheet" href={{ url_for('static', filename='DataInspector.css') }}/>
     <script type="text/javascript" src={{ url_for('static', filename='LinkLabelOnPathDraggingTool.js') }}> </script>
 
+<script>
+
+
+</script>
+
 
 
     <p id="modellanzahl" style="display:none">1</p>
-    <h1 style="margin-top:3%; margin-left:2%">
-        {%   if title %}
-                  {{ title}}</h1>
-                {% else  %}
-                Unbenanntes Modell</h1>
-                {% endif %}
-        <input type="button" id ="savior" class=" btn btn-outline-success" value="Modell speichern" onclick="schickFragen();" style="position:absolute; left: 50%; top:7%;" >
 
-            <div id="dieFrage" style="background-color:green; position:absolute;left:5%;width:90vw;top:18%;height:80vh;border:2px solid whitesmoke;"></div>
+    <input id="derTitel" style="margin-bottom:1%;margin-top:5%; margin-left:2%; font-size:large;" type="text" onclick="document.getElementById('titelversender').style.display='inline';" value=" {{ title }}">
+    <input id="titelversender" type="button" class=" btn-sm btn-outline-success" value="Titel ändern" onclick="sendetquiztitel();" style="display: none; position:relative; margin-left: 0.2%; font-size: 12px;" >
+        <input type="button" id ="savior" class=" btn btn-outline-success" value="Frage speichern" onclick="schickFragen();" style="position:absolute; left: 50%; top:10%;" >
+                <input type="button" id ="deletor" class=" btn btn-outline-success" value="Löschen" onclick="deleteQuiz()" style="position:absolute;top:10%; right:5%;" >
+
+            <div id="dieFrage" style="background-color:LightGreen; position:absolute;left:5%;width:90vw;top:18%;height:80vh;border:2px solid whitesmoke;"></div>
                <div id="anfang"></div>
 
 
                     <script>
 
-                    function schickFragen() {
-                        console.log(" TODO am besten Fragen mit Fetch an den Server! ");
-                    }
 
 
-                        var  dieFrage = new go.GraphObject.make(go.Diagram, 'dieFrage');
 
-                        function machdiagramme() {
+    function sendetquiztitel(){
+        var aqui = window.location.href.toString();
+        document.getElementById('titelversender').style.display='none';
 
-                          dieFrage.nodeTemplate = jo(go.Node, "Auto",
+        var derTitel = document.getElementById("derTitel").value;
+        console.log(derTitel);
+        let xhr = new XMLHttpRequest();
+        //let url = `${window.origin}/saved/${model_id}`;  zum Testen noch drin wie folgende
+        xhr.open("POST", aqui, true);
+        xhr.setRequestHeader("Content-Type", "text/html;charset=UTF-8");
+        xhr.send(derTitel);
+
+}
+
+//Diagramm "manuell" definiert
+
+    var  dieFrage = new go.GraphObject.make(go.Diagram, 'dieFrage');
+
+    function machdiagramme() {
+
+      dieFrage.nodeTemplate = nodeTemplate = jo(go.Node, "Auto",
             jo(go.Shape, "RoundedRectangle",
                 {parameter1:50,
                     toLinkable:true,
@@ -52,24 +69,70 @@
                     stroke:"transparent",
             minSize:new go.Size(140,50)}),
             jo(go.Panel, "Vertical",
-            jo("HyperlinkText",
+                {padding:10},
+                jo(go.Panel, "Auto",
+                jo(go.Shape, "RoundedRectangle",
+                    {fill:"red",
+                        alignment:new go.Spot(0,1,0,-32),
+                        minSize:new go.Size(120,30),
+                        opacity:0.5}),
+                jo(go.TextBlock, "Frage: ",
+                    {alignment:new go.Spot(0,0,0,0)}),
+                jo(go.Shape, "Rectangle",
+                    {minSize:new go.Size(1, 20),
+                        maxSize: new go.Size(1, 42),
+                    fill:"transparent", stroke:"transparent"}
+                ),
+                    jo(go.TextBlock,
+            {editable:true,
+            maxSize:new go.Size(200,NaN), margin:10},
+            new go.Binding("text", "frage").makeTwoWay())
+                ),
+                jo(go.Shape, "Rectangle",
+                    {minSize:new go.Size(1, 10),
+                        visible:false,
+                        maxSize: new go.Size(1, 12),
+                    background:"transparent", stroke:"transparent"}
+                ),
+                jo(go.Panel, "Auto",
+                jo(go.Shape, "RoundedRectangle",
+                    {fill:"green",
+                        alignment:new go.Spot(0,1,0,-32),
+                        minSize:new go.Size(120,30),
+                        opacity:0.5}),
+                jo(go.TextBlock, "Antwort: ",
+                    {alignment:new go.Spot(0,0,0,0)}),
+                jo(go.TextBlock,
+                    new go.Binding("text","count"),
+                    {minSize:new go.Size(1, 20),
+                        visible:false,
+                        maxSize: new go.Size(1, 42),
+                    background:"transparent", stroke:"transparent"}
+                ),
+                    jo(go.TextBlock,
+            {editable:true,
+            maxSize:new go.Size(200,NaN), margin:10},
+            new go.Binding("text", "antwort").makeTwoWay())
+                ),
+                jo(go.TextBlock,
+                    new go.Binding("text","acc"),
+
+                    {minSize:new go.Size(1, 10),
+                        visible:false,
+                        maxSize: new go.Size(1, 10),
+                    background:"transparent", stroke:"transparent"}
+                ),
+
+                            jo("HyperlinkText",
                 function (node) {
-                if(node.data.id == "keine") {return }
-                else {return "http://127.0.0.1:5000/saved/" + parseInt(node.data.id);}
+                    return "/saved/" + parseInt(node.data.id);
                 },
                 function (node) {
-                    return 'Ursprung';
+                    return 'Ursprungsdiagramm';
                 },
                 {margin: 10,
-                scale:1.5}),
-
-                jo(go.TextBlock,
-                    {editable:true},
-            new go.Binding("text", "frage").makeTwoWay()),
-
-            jo(go.TextBlock,
-            {editable:true},
-            new go.Binding("text", "antwort").makeTwoWay())
+                scale:1,
+                alignment:go.Spot.BottomCenter}),
 
 
             ))
@@ -78,17 +141,125 @@
                         }
                     </script>
 
-
-              <script>
-
-
-              </script>
-
-          </div>
         <p></p>
-            </article>
 
     <script>
+
+//Kleines Easteregg in der Löschenfunktion
+
+    function deleteQuiz(){
+        var speicherknopf = document.getElementById("deletor");
+        speicherknopf.disabled = true;
+        let timerId = setInterval(() => springKnopf(), 400);
+
+        setTimeout(() => { clearInterval(timerId); knopfloeschend() }, 1699);
+
+            }
+
+
+
+    function knopfloeschend(){
+        var speicherknopf = document.getElementById("deletor");
+
+
+        speicherknopf.style.top = "10%";
+        speicherknopf.style.right = "5%";
+        speicherknopf.disabled = false;
+        speicherknopf.value = "Endgültig löschen ;)?";
+        speicherknopf.onclick = function () {
+        loeschquiz();
+    }}
+
+
+    function springKnopf(){
+        let dltr = document.getElementById('deletor');
+        let x = Math.random()*40+10;
+        let y = Math.random()*5+9;
+        dltr.style.position ="absolute";
+        dltr.style.top=y+"%";
+        dltr.style.right=x+"%";
+
+        console.log(dltr.style.top);
+
+        //dltr.style = "position:absolute; top:"+y+"; left:"+x+";"
+    }
+
+
+
+    function schickFragen() {
+        var neueFragen = {'array':[]};
+        var imdia = dieFrage.nodes;
+        imdia.each(function(co) {
+            var zuKnoten = {};
+            co= co.part.data;
+            zuKnoten.antwort = co.antwort;
+            zuKnoten.frage = co.frage;
+            zuKnoten.acc = 0.0;
+            zuKnoten.count = co.count;
+            zuKnoten.id = co.id;
+            neueFragen.array.push(zuKnoten);
+            zuKnoten={};
+        })
+
+                    console.log(neueFragen);
+
+                neueFragen = JSON.stringify(neueFragen);
+
+
+
+                          fetch(window.location.href, {
+         method: "POST",
+         body: neueFragen,
+         headers: new Headers({
+             "content-type": "application/json"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+
+//           console.log('response: ');
+//           console.log(response);
+            console.log(typeof(response));
+            if (response.status !== 200)     {
+              //console.log(`Looks like there was a problem. Status code: ${response.status}`);
+              return;
+            }
+       //    console.log('im response block');
+       //    console.log(response.text());
+
+            response.text().then(function (data) {
+                console.log("hier die daten aus dem komischen response text ding");
+                console.log(data);
+              //console.log('hier kann noch mehr passieren');
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          }); }
+
+
+function loeschquiz(){
+         fetch(window.location.href +'/delete', {
+         method: "POST",
+         headers: new Headers({
+             "content-type": "text/html;charset=UTF-8"
+         })
+     }).then((response) => response.text())
+         .then(function (response) {
+
+            window.location.assign('/erstelltequizze/1');
+
+            if (response.status !== 200)     {
+              return;
+            }
+            response.text().then(function (data) {
+            });
+          })
+          .catch(function (error) {
+            console.log("Fetch error: " + error);
+          });
+}
+
+
 
 
     function modellbearbeitung() {
@@ -98,7 +269,7 @@
       a.appendChild(linkText);
       a.title = "Abfrage";
       a.class="nav-item nav-link";
-      a.style="font-size:large; position:absolute; left:45%; top:30%";
+      a.style=" position:absolute; left:50%; top:28%";
       a.href = window.location.href +"/abfrage";
 
 
@@ -108,23 +279,22 @@
       ab.appendChild(linkText);
       ab.title = "Erweitern"
       ab.class="nav-item nav-link";
-      ab.style="font-size:large;position:absolute; left:55%; top:30%";
-      ab.href = window.location.href; //+"/1";
+      ab.style="position:absolute; left:55%; top:28%";
+      ab.href = window.location.href +'/1';
 
       ma.appendChild(a);
       ma.appendChild(ab);
 
     }
+
+    //macht Fragen aus Diagrammdaten
     function machFragen() {
         quizdaten = [];
 
       allesPaletti.nodes.each(function(e) {
                     var ey = e.part.data;
                     var quizfrage = {'count': 0, 'acc':0.5, 'id':thisid};
-                    //quizfrage.ja = e.data.hauptInfo;
-                    console.log(ey.data);
                         quizfrage.frage = 'Was wissen sie noch zu:  \n' + ey.frage + '?';
-                        console.log(quizfrage.frage);
                         quizfrage.antwort = ey.antwort;
                         quizfrage.typ = 'text';
                     quizdaten.push(quizfrage);
@@ -134,12 +304,10 @@
                     var quizfrage = {'count': 0, 'acc':0.5, 'id':thisid};
 
                     for (e in ey.info) {
-                        console.log(quizfrage.frage)
                         quizfrage.count = 0;
                         quizfrage.acc = 0.5;
                         quizfrage.id=thisid;
-                                            quizfrage.frage = 'Was wissen sie noch zu:  \n' + ey.info[e].text + '?';
-
+                        quizfrage.frage = 'Was wissen sie noch zu:  \n' + ey.info[e].text + '?';
                         quizfrage.antwort = ey.info[e].mehr[0];
                         quizfrage.typ = 'mchoice';
                         quizdaten.push(quizfrage);
@@ -147,22 +315,12 @@
                     }
                 }
 
-
-
-                        console.log(quizdaten);
             });
     }
 
 
     function getJSON(){
         var thisid = window.location.href.toString();
-        /*
-        thisid = thisid.substring(thisid.lastIndexOf("/")+1,thisid.length);
-        console.log(thisid);
-        thisid=parseInt(thisid);
-return
-         */
-
 
     let request = new XMLHttpRequest();
     request.open("GET", url=thisid);
@@ -173,7 +331,6 @@ return
         if ((JSON).parse(this.responseText)) {
 
             var model_json = JSON.parse(this.responseText);
-            console.log(model_json.array[0]);
 
             if (model_json.array) {
                 for (var i = 0; i < model_json.array.length; i++) {
@@ -183,7 +340,7 @@ return
                     zuKnoten.frage = co.frage;
                     zuKnoten.acc = co.acc;
                     zuKnoten.count = co.count;
-                        zuKnoten.id = co.id;
+                    zuKnoten.id = co.id;
 
 
                     dieFrage.model.addNodeData(zuKnoten);
@@ -192,36 +349,20 @@ return
                 }
             }
         }
-            //zum Debuggen
-            //console.log('Diagramm Data: ');
-            //console.log(model_json);
-            //Stellt sicher, dass das Diagramm initialisiert wurde
-            //läd die Objekttemplates bevor das Modell geladen wird
-
-        //  style_dia();
 
         else {
             console.warn(request.statusText, request.responseText);
         }
     });
     request.send();
-
-                console.log(thisid);
-
-
-
-
     }
 
 
-
-            document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
 
                 machdiagramme();
                 getJSON();
-                //machFragen();
-
-            modellbearbeitung();
+                modellbearbeitung();
             });
         </script>
 
@@ -229,7 +370,7 @@ return
   Launch demo modal
 </button>
 
-<!-- Modal -->
+<!-- Das Modal für ein temporäres Array -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
   <div class="modal-dialog" role="document" >
       <p id="ident" style="display: none;">0</p>

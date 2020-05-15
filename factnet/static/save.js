@@ -14,6 +14,7 @@ function autoSpeichern() {
         setTimeout(timeoutProblem, 30000);
 }
 
+//Umgeht ein Problem mit setTimeout, speichert nach 30 Sekunden
 function timeoutProblem() {
     autoSpeichern();
     if (neuesDiagramm.isModified) {sendData();}
@@ -32,6 +33,8 @@ if (modellInfo) {
         }
     })
 };
+
+//Geht abhängig von Browser und Betriebssystem
 if (document.getElementById('derTitel')) {
     var modellTitel = document.getElementById("derTitel");
     modellTitel.addEventListener("keyup", function (event) {
@@ -65,6 +68,7 @@ function unhide() {
     vanish("ueber2");
     vanish("ueber3");
     vanish("derTitel");
+
 // Macht einige unsichtbaren Elemente sichtbar
         let rest = document.getElementsByClassName('anfang');
         Array.from(rest).forEach((element) => {
@@ -77,8 +81,9 @@ function unhide() {
 //Erstellt aus dem Div Element ein neues Diagramm,
 
 function make_dia() {
-    neuesDiagramm = jo(go.Diagram, "mainDiagram", {
+    neuesDiagramm = jo(go.Diagram, "mainDiagram",
 
+        {
         "grid.visible": true,
         "grid.gridCellSize": new go.Size(25, 25),
          "undoManager.isEnabled": true,
@@ -118,6 +123,7 @@ function make_dia() {
             neuesDiagramm.model.commitTransaction("");
 
         }});
+
    //Ermöglicht die Größenveränderung von Gruppen
     let geoReshape = new GeometryReshapingTool();
 
@@ -125,35 +131,32 @@ function make_dia() {
 
     neuesDiagramm.toolManager.mouseDownTools.each(function(e){
         if(e.Ra == "GeometryReshaping") {
-       neuesDiagramm.model.startTransaction("adornment");
-        neuesDiagramm.toolManager.resizingTool.maxSize = new go.Size(100000,100000);
-        neuesDiagramm.toolManager.resizingTool.minSize = new go.Size(200,200);
-
-         neuesDiagramm.toolManager.linkReshapingTool.handleArchetype =
-      jo(go.Shape, "RoundedRectangle",
-          { width: 16, height: 16, fill: "dodgerblue",
-          stroke:"transparent", strokeWidth:40 });
-        neuesDiagramm.toolManager.linkReshapingTool.midHandleArchetype =
-    jo(go.Shape, "RoundedRectangle",
-          { width: 16, height: 16, fill: "white",
-          stroke:"transparent", strokeWidth:40 });
-
-            neuesDiagramm.toolManager.resizingTool.handleArchetype =
-    jo(go.Panel, "Auto",
-      jo(go.Shape, "RoundedRectangle",
-        { name: "", fill: "dodgerblue", stroke: "transparent", strokeWidth:66,
-            margin:-10,
-
-            minSize:new go.Size(32,32),
-        maxSize:new go.Size(64,64),}));
+            neuesDiagramm.model.startTransaction("adornment");
+            neuesDiagramm.toolManager.resizingTool.maxSize = new go.Size(100000,100000);
+            neuesDiagramm.toolManager.resizingTool.minSize = new go.Size(200,200);
+            neuesDiagramm.toolManager.linkReshapingTool.handleArchetype =
+                jo(go.Shape, "RoundedRectangle",
+                  { width: 16, height: 16, fill: "dodgerblue",
+                  stroke:"transparent", strokeWidth:40 });
+                  neuesDiagramm.toolManager.linkReshapingTool.midHandleArchetype =
+                jo(go.Shape, "RoundedRectangle",
+                  { width: 16, height: 16, fill: "white",
+                  stroke:"transparent", strokeWidth:40 });
+                    neuesDiagramm.toolManager.resizingTool.handleArchetype =
+                jo(go.Panel, "Auto",
+                  jo(go.Shape, "RoundedRectangle",
+                    { name: "", fill: "dodgerblue", stroke: "transparent", strokeWidth:66,
+                        margin:-10,
+                        minSize:new go.Size(32,32),
+                        maxSize:new go.Size(64,64),}));
 
 //            console.log(e.handleArchetype.Rn.width = 40);
     neuesDiagramm.model.commitTransaction("adornment");}
     });
-    neuesDiagramm.scrollMode = go.Diagram.InfiniteScroll;
 
-              neuesDiagramm.toolManager.dragSelectingTool.isPartialInclusion = true;
-              neuesDiagramm.toolManager.dragSelectingTool.box =
+    neuesDiagramm.scrollMode = go.Diagram.InfiniteScroll;
+    neuesDiagramm.toolManager.dragSelectingTool.isPartialInclusion = true;
+    neuesDiagramm.toolManager.dragSelectingTool.box =
     jo(go.Part,
       { layerName: "Tool" },
       jo(go.Shape, "RoundedRectangle",
@@ -161,61 +164,43 @@ function make_dia() {
     );
 
 //Zentriert ausgewähltes Element
-            neuesDiagramm.addDiagramListener("LinkDrawn", function(e) {
-                var part = e.subject;
+    neuesDiagramm.addDiagramListener("LinkDrawn", function(e) {
+        var part = e.subject;
 
-                neuesDiagramm.startTransaction("gibt Link Farbe");
-                neuesDiagramm.model.setCategoryForLinkData(part.data,"linkTem");
-                neuesDiagramm.model.setDataProperty(part.data,"color", "green");
-                neuesDiagramm.model.setDataProperty(part.data,"scale", "1.0");
-                //neuesDiagramm.model.setDataProperty(part.data,"linkbreite", "1.0");
-                neuesDiagramm.model.setDataProperty(part.data,"linklabel", true);
-                //neuesDiagramm.model.setDataProperty(part.data,"linkbreite", "30.0");
+        neuesDiagramm.startTransaction("gibt Link Farbe");
+        neuesDiagramm.model.setCategoryForLinkData(part.data,"linkTem");
+        neuesDiagramm.model.setDataProperty(part.data,"color", "green");
+        neuesDiagramm.model.setDataProperty(part.data,"scale", "1.0");
+        //neuesDiagramm.model.setDataProperty(part.data,"linkbreite", "1.0");
+        neuesDiagramm.model.setDataProperty(part.data,"linklabel", true);
+        //neuesDiagramm.model.setDataProperty(part.data,"linkbreite", "30.0");
 
-                neuesDiagramm.commitTransaction("gibt Link Farbe");
-                console.log(part.data.color);
+        neuesDiagramm.commitTransaction("gibt Link Farbe");
+        console.log(part.data.color);
 
 
-            });
+    });
 
       neuesDiagramm.commandHandler.archetypeGroupData =
     { isGroup: true, color: "blue" };
 
 
-            //Diagrammlistener der bei Änderungen die Speicherfunktion ermöglicht
-            // und nach 34 Sekunden autospeichert
-neuesDiagramm.addDiagramListener("Modified", function(e) {
-    var button = document.getElementById("savior");
-    if (button) button.disabled = !neuesDiagramm.isModified;
-    var idx = document.title.indexOf("*");
-    if(!neuesDiagramm.model.nodeDataArray == []) {
-    if (neuesDiagramm.isModified) {
-      if (idx < 0) document.title += "*";
-    } else {
-      if (idx >= 0) document.title = document.title.slice(0, idx);
-    }}});
-
-//Gibt Inhalt des geladenen Models in der Konsole aus
-//    console.log("neuesDiagramm.model");
-//    console.log(neuesDiagramm.model);
+    //Diagrammlistener der bei Änderungen die Speicherfunktion ermöglicht
+    // und nach 34 Sekunden autospeichert
+    neuesDiagramm.addDiagramListener("Modified", function(e) {
+        var button = document.getElementById("savior");
+        if (button) button.disabled = !neuesDiagramm.isModified;
+        var idx = document.title.indexOf("*");
+        if(!neuesDiagramm.model.nodeDataArray == []) {
+        if (neuesDiagramm.isModified) {
+          if (idx < 0) document.title += "*";
+        } else {
+          if (idx >= 0) document.title = document.title.slice(0, idx);
+        }}});
 
 
     neuesDiagramm.model = new go.GraphLinksModel([], []); //Modelinitialisierung als GraphlinksModel nötigf
 
-//Möglich, dass das noch gebraucht wird:
-//neuesDiagramm.animationManager.initialAnimationStyle = go.AnimationManager.AnimateLocations;
-//neuesDiagramm.animationManager.initialAnimationStyle = go.AnimationManager.None;
-//neuesDiagramm.layout.isInitial = false;
-/*
-    neuesDiagramm.addDiagramListener('InitialAnimationStarting', function(e) {
-        var animation = e.subject.defaultAnimation;
-        animation.easing = go.Animation.EaseOutExpo;
-        animation.duration = 900;
-        animation.add(e.diagram, 'scale', 0.1, 1);
-        animation.add(e.diagram, 'opacity', 0, 1);
-});
-
- */
 
     if (document.getElementById("derInspektor")) {
         inspectore();
@@ -239,7 +224,6 @@ function addData() {
     console.log(e);
 
      var neuerKnoten = { knotenfarbe: "green", hauptInfo: toAdd, scale:"1.0",scaleZu:"1.0", loc:e,
-                //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
                 textfarbe:"white", hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften",
                 info: []};
 
@@ -255,7 +239,6 @@ function addData() {
 //Potenzielle Sicherheitslücke, Zugriff auf DB-Eintrag ist aber durch user_login kontrolliert
 function sendData() {
 
-    //console.log('url is : ')
     //Der einzige Weg zu einem Diagramm ist über /saved/DiagrammID außer bei der Erstellung
     if (!current_url) { current_url = window.location.href}
     console.log(window.location.href);
@@ -267,10 +250,6 @@ function sendData() {
     //let url = `${window.origin}/saved/${model_id}`;  zum Testen noch drin wie folgende
     xhr.open("POST", current_url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
-
-
-    //console.log('folgendes json file wird geschickt: ');
-    //console.log(modelAsJson.toString());
     xhr.send(modelAsJson);
     neuesDiagramm.isModified = false;
 }
@@ -295,8 +274,6 @@ function sendModelName() {
             if (response.status !== 200)     {
               return;
             }
-
-
             response.text().then(function (data) {
             });
           })
@@ -305,6 +282,7 @@ function sendModelName() {
           });
 
       }
+
 //diese Funktion fordert vom Server eine gespeichertes Diagrammodell an
 function getDiagramData() {
     let request = new XMLHttpRequest();
@@ -363,10 +341,8 @@ function getDiagramData() {
     request.send();
 }
 
-// Diagram style
+// Diagrammelemente müssen vor der Anzeige des JSON Objektes erst definiert werden
 function style_dia() {
-
-
 
         var nochEinItemTemplate =
             jo(go.Panel, "Auto",
@@ -388,63 +364,8 @@ function style_dia() {
             )));  // end of itemTemplate
 
 
-    //temTem = new go.Map(); // In TypeScript you could write: new go.Map<string, go.Panel>();
-            var itemTem =
-           jo(go.Panel, "Auto",
-                                  {padding:5},
-
-               jo(go.Shape, "RoundedRectangle",
-                //Bildet den Hintergrund des Unterpunktes
-                   {fill:"green",
-                      // stretch:go.GraphObject.Horizontal,
-                minSize:new go.Size(490,30)
-                   },
-                ), //diese Panels und die Form umfassen den Rest
-
-
-               jo(go.TextBlock,
-          new go.Binding("text","nochMehr").makeTwoWay(),
-                   {
-                       alignment:go.Spot.TopLeft,
-
-                           //new go.Spot(0,0-16,16),
-                       scale:1.2,
-                   margin:20,
-                   editable:true}),
-
-               jo("Button",
-                {
-                    alignment:new go.Spot(1,1,0,0),
-                  margin: new go.Margin(0, 0, 0, 0),
-                  click: machNeuenUntereintrag
-                },
-                jo(go.Shape, "PlusLine",
-                  { desiredSize: new go.Size(16, 16) })
-
-        ),
-
-
-               jo(  go.Panel, "Vertical",
-                new go.Binding("itemArray", "mehr").makeTwoWay(),
-                {
-                    itemTemplate:nochEinItemTemplate,
-                    margin:0,
-                    alignment:go.Spot.Center,
-                    defaultAlignment: go.Spot.Left
-                },
-
-            ));
-
-
-
-
-
-
-
-
          // Array-Template
-
-                var itemTemplateUber =
+    var itemTemplateUber =
             jo(go.Panel, "Auto",
                 {
                     padding:20,
@@ -477,8 +398,6 @@ function style_dia() {
 
                     //maxSize: new go.Size(700, NaN)
                     }),
-
-
 //mit Text von Info Array verknüpft
                 jo(go.TextBlock, new go.Binding("text","text").makeTwoWay(),
                     {
@@ -573,15 +492,12 @@ function style_dia() {
                 {maxSize:new go.Size(500,NaN),
 
                     doubleClick:zentrierAlles,
-              portId: "",
-               toLinkable: true,
-                  fromLinkable:true,
-              toSpot:go.Spot.NotTopSide,
-                  toSpot:go.Spot.NotTopSide,
-
-
-
-                    fill:"white"
+                portId: "",
+                toLinkable: true,
+                fromLinkable:true,
+                toSpot:go.Spot.NotTopSide,
+                toSpot:go.Spot.NotTopSide,
+                fill:"white"
                 }),
                 jo(go.TextBlock, "!",
                     new go.Binding("text").makeTwoWay(),
@@ -595,10 +511,7 @@ function style_dia() {
                                 jo(go.TextBlock, "!",
                     new go.Binding("text","qwer").makeTwoWay(),
                     {visible:false})
-            )
-)
-)
-;
+            )));
 
 
 //Erstellt einen Kommentar
@@ -651,14 +564,11 @@ var mingroup =
      // Begriffsknoten der mit Eigenschaftsblöcken erweitert werden kann
     var allesSehen =
 
-
     jo(go.Node, "Auto",
         //{name:"MEHR"},
         new go.Binding("text", "category"),
         new go.Binding("scale").makeTwoWay(),
         locator(),
-
-
 
         jo(go.Shape, "RoundedRectangle",
             new go.Binding("fill", "knotenfarbe").makeTwoWay(),
@@ -667,7 +577,9 @@ var mingroup =
             stroke:"transparent",
             parameter1:20,
             portId: "", fromLinkable: true, toLinkable: true, cursor: "pointer",
-            toSpot: go.Spot.NotBottomSide,fromSpot: go.Spot.Bottom}
+            toSpot: go.Spot.NotBottomSide,fromSpot: go.Spot.Bottom,
+            doubleClick:zentrierAlles}
+
             ),
 
         jo(go.Panel, "Auto",
@@ -727,7 +639,7 @@ var mingroup =
                                {
                     alignment:go.Spot.TopCenter,
                     stroke:"white",
-                    font:" bold 22px Arial, Serif",
+                    font:" bold 42px Arial, Serif",
                     verticalAlignment: go.Spot.Center,
                     textAlign:"center",
                     minSize:new go.Size(800,60),
@@ -765,6 +677,39 @@ var mingroup =
                 jo(go.Shape, "PlusLine",  { alignment:go.Spot.Center,
                                       strokeWidth:10, stroke:"white"
 })),
+
+
+
+
+
+
+
+               jo("PanelExpanderButton", "quelli",
+                    { alignment:go.Spot.TopCenter,
+                    scale:5}),
+
+               jo(go.Panel, "Vertical",
+                new go.Binding("itemArray", "quellen").makeTwoWay(),
+                {
+                    visible:false,
+                    scale:2,
+                    name:"quelli",
+                    alignment:go.Spot.BottomCenter,
+                    defaultAlignment: go.Spot.Left,
+                    margin:50,
+                    //fill:"slategray"
+                        itemTemplate:
+                    jo(go.Panel, "Auto",
+                      { margin: 2 },
+                      jo(go.Shape, "RoundedRectangle",
+                        { fill: "#91E3E0" }),
+                      jo(go.TextBlock, new go.Binding("text", "").makeTwoWay(),
+                        { margin: 2,
+                        editable:true,
+                        font: "bold 14px Arial"})
+                    )  // end of itemTemplate
+                    }
+                ),
 
 
 
@@ -851,7 +796,7 @@ var lili =
                 {               segmentIndex:NaN,
 
                     segmentFraction: 0.05,
- _isLinkLabel: true, segmentIndex: NaN},
+                    _isLinkLabel: true, segmentIndex: NaN},
                     new go.Binding("segmentFraction","eins").makeTwoWay(),
 
                 jo(go.Shape, "RoundedRectangle"),
@@ -1031,10 +976,8 @@ var lili =
                             new go.Binding("visible","vispim").makeTwoWay(),
                             {stroke:"black",
                                 angle:180,
-                                                                margin:10,
-
-                                                                maxSize:new go.Size(NaN,62),
-
+                                margin:10,
+                                maxSize:new go.Size(NaN,62),
                             strokeWidth:30}),
                               jo(go.Shape, "LogicThereExists",
                             new go.Binding("visible","visex").makeTwoWay(),
@@ -1089,7 +1032,7 @@ var lili =
 
           jo(go.Shape, "Help",
             {stroke:"white",
-                strokeWidth:26,
+                strokeWidth:42,
                 margin:20,
             minSize:new go.Size(300,300),
 
@@ -1222,7 +1165,6 @@ jo(go.Panel, "Auto",
                     locator(),
 
                   jo(go.Panel, "Auto",
-                //new go.Binding("location", "vorderLoc", go.Point.parse).makeTwoWay(go.Point.stringify),
                 new go.Binding("visible", "vordergrund"),
 
                 jo(go.Shape,
@@ -1270,9 +1212,9 @@ jo(go.Panel, "Auto",
 
                       maxSize: new go.Size(1000,NaN)
                       },
-                      jo(go.TextBlock, "Definition",
+                      jo(go.TextBlock, "Definition:",
                           //{alignment: new go.Spot(0,0,-4,-12)
-                          {font:"bold 20pt Segoe UI sans-serif",
+                          {font:"bold 50pt Segoe UI sans-serif",
                           stroke:"white",
                               textAlign:"center",
                           stretch:go.GraphObject.Horizontal},
@@ -1283,7 +1225,7 @@ jo(go.Panel, "Auto",
                               wrap: go.TextBlock.WrapFit,
                               background:"black",
                               stroke:"white",
-                              font:"bold 18pt Segoe UI sans-serif",
+                              font:"bold 42pt Segoe UI sans-serif",
                               editable:true,
                           stretch:go.GraphObject.Horizontal,
                               minSize: new go.Size(550,NaN),
@@ -1332,14 +1274,12 @@ jo(go.Panel, "Auto",
 
                         {mouseDrop: function(e, node) {
               var diagram = node.diagram;
-              var selnode = diagram.selection.first();  // assume just one Node in selection
                 console.log(diagram.selection.first().data.group);
                     diagram.selection.each(function(a){console.log(a.data)});
                 console.log(node.data.key);
                 neuesDiagramm.model.startTransaction("Zu Gruppe");
 
                 let hintergruppe = false;
-                let gibtgruppe = false;
 
                 diagram.selection.each(function(i){
                     if(i.data.isGroup == true && i.data.group == "") {
@@ -1443,7 +1383,7 @@ jo(go.Panel, "Vertical",
                        new go.Binding("stroke", "textfarbe").makeTwoWay(),
                                {
                     alignment:go.Spot.TopCenter,
-                    font:" bold 22px Arial, Serif",
+                    font:" bold 42px Arial, Serif",
                     verticalAlignment: go.Spot.Center,
                     textAlign:"center",
                     minSize:new go.Size(800,60),
@@ -1491,6 +1431,7 @@ jo(go.Panel, "Vertical",
                  scale:5,
                  maxSize:new go.Size(300,NaN),
 
+                 //ganz schlimm jedes Gruppenelement wieder aus dem Minimallayout zurücküberführen
  click:function(e,obj){
         neuesDiagramm.model.startTransaction("ok");
 
@@ -1615,24 +1556,11 @@ jo(go.Panel, "Vertical",
                 margin:40,
             minSize:new go.Size(500,500),
 
-            opacity:0.5})
- ,
+            opacity:0.5}),
         jo(go.Placeholder,    // represents the area of all member parts,
           {padding: 240,
           isPanelMain:true}))  // with some extra padding around them
-      ,
-      //jo(go.TextBlock,         // group title
-        //{ alignment: go.Spot.Right, font: "Bold 12pt Sans-Serif" }, // ich weiß nicht warum,
-          // Textblock aber nicht entfernt werden ohne dass der Textblock in dem anderen Panel seine Formatierung verliert?!
-        )
-
-
-
-
-
-           ),
-
-        );
+        )));
 
 
 
@@ -1972,28 +1900,6 @@ neuesDiagramm.linkTemplateMap = linktemplateMap;
             jo("ContextMenuButton",
             jo(go.TextBlock, "Textfeld kleiner"),
             { click: function(e, obj) { newSizeChange(obj, 0.96); } }),
-            jo("ContextMenuButton",
-            jo(go.TextBlock, "Link breiter"),
-            { click: function(e, obj) {e.diagram.model.startTransaction("sw link");
-
-            console.log(obj.part.data);
-            let neu = parseFloat(obj.part.data.linkbreite);
-            console.log(neu);
-            console.log(obj.part.data.linkbreite);
-            if(!obj.part.data.linkbreite) {neu = 0.0}
-
-            console.log(neu);
-
-            neu=neu+1.0;
-
-            console.log(typeof(neu));
-            neu = neu.toString();
-            console.log(typeof(neu));
-            console.log(neu);
-
-            e.diagram.model.setDataProperty(obj.part.data, "linkbreite", neu);
-            e.diagram.model.commitTransaction("sw link");
-            } }),
           jo("ContextMenuButton",
             jo(go.TextBlock, "Linkkategorie wechseln"),
             { click: function(e, obj) {
@@ -2055,9 +1961,8 @@ neuesDiagramm.linkTemplateMap = linktemplateMap;
             {click: function(e,obj){
             e.diagram.commit(function(d) {
                 var neuerKnoten = { knotenfarbe: "green", hauptInfo: "mehr Info", scale:"1.0",scaleZu:"1.0",
-                //restInfo:[{'mehr':[{'nochMehr':'beschreibung unterbegriff' }]},{'mehr':[{'nochMehr':'beschreibung unterbegriff'}]}],
                 textfarbe:"white", hintergrund:false, vordergrund:true, category:"allesSehen",restInfo:"Definition oder Eigenschaften",
-                info: [{ 'text': "Unterbegriff/Eigenschaft" , 'mehr':["mehr dazu"], 'c':1}]};
+                info: [], quellen: []};
         //
             d.model.addNodeData(neuerKnoten);
             part = d.findPartForData(neuerKnoten);
@@ -2141,6 +2046,8 @@ neuesDiagramm.linkTemplateMap = linktemplateMap;
 
 
 
+
+
         neuesDiagramm.nodeTemplateMap.get("allesSehen").contextMenu=
             jo("ContextMenu",
               jo("ContextMenuButton",
@@ -2158,6 +2065,18 @@ neuesDiagramm.linkTemplateMap = linktemplateMap;
               jo("ContextMenuButton",
                   jo(go.TextBlock, "Ausgruppieren"),
                 { click: function(e, obj) { e.diagram.model.setDataProperty(obj.part.data, "group", "") }}
+                ),
+                jo("ContextMenuButton",
+                  jo(go.TextBlock, "Neue Quelle hinzufügen"),
+                { click: function(e, obj) { machNeueQuelle(e,obj) }}
+                ),
+                jo("ContextMenuButton",
+                  jo(go.TextBlock, "Letzte Quelle entfernen"),
+                { click: function(e, obj) { loeschLetzteQuelle(e,obj) }}
+                ),
+                jo("ContextMenuButton",
+                  jo(go.TextBlock, "Letzten Eigenschaftsblock entfernen"),
+                { click: function(e, obj) { loeschUnter(e,obj) }}
                 ));
 
 
@@ -2320,7 +2239,8 @@ function linkDoubleClick(e, obj) {
     var anders = 0;
     var letzteVer = false;
     if (!wiederholKoordinaten) {wiederholKoordinaten}
-    function suchFunktion() {  // called by button
+  function suchFunktion() {  // called by button
+        var coord = [];
 
         var input = document.getElementById("diaSuche");
         if (!input) return;
@@ -2339,8 +2259,25 @@ function linkDoubleClick(e, obj) {
                 uberErgebnisse = neuesDiagramm.findNodesByExample(
                     {hauptInfo: regex});
 
+
+                neuesDiagramm.nodes.each(function(e) {
+                    console.log(e.data);
+                    if (e.data.category == "simple" || e.data.category == "allesSehen" || e.data.category == "detailgruppe") {
+
+                    for (var i = 0; i < e.data.info.length; i++) {
+                        var node = e.data;
+                        if (regex.test(node.info[i].text) || regex.test(node.info[i].mehr[0])) {
+                            coord.push(e.actualBounds);
+                            console.log("for schleife")
+                            i = node.info.length;
+                        }
+
+                    }
+                }
+
+                });
+
                 //ein Array wird angelegt um die Koordinaten zu speichern
-                var coord = [];
                 console.log("uberErgebnisse.count");
                 console.log(uberErgebnisse.count);
                 suchmenge = uberErgebnisse.count;
@@ -2399,21 +2336,7 @@ function linkDoubleClick(e, obj) {
                     console.log("suchmenge: " + suchmenge + " counter: " + counter);
                     console.log("knotenKeys: ");
                     console.log(knotenKeys);
-                    let gesuchterKnoten = neuesDiagramm.findNodeForKey(knotenKeys[counter-suchmenge]);
-                        neuesDiagramm.startTransaction("einblenden");
-                    if (gesuchterKnoten.data.vordergrund){
-                        console.log("gesuchterKnoten");
-                        e = "unnütz";
-                        //einblenden(e,gesuchterKnoten);
-                        letzteVer = true;
-                        anders = knotenKeys[counter-suchmenge];
-                      //  gesuchterKnoten.data.vordergrund=false;
-                       // gesuchterKnoten.data.hintergrund=true;
-//                    if (gesuchterKnoten.data.vordergrund == false){ gesuchterKnoten.data.hintergrund=true;
-   //                     gesuchterKnoten.data.vordergrund = false;
-                    console.log("gesuchterKnoten verändert: " );
-                    console.log(gesuchterKnoten)}
-                        neuesDiagramm.commitTransaction("einblenden");
+
 
                 }
 
@@ -2424,15 +2347,7 @@ function linkDoubleClick(e, obj) {
 
                 //der Fokus des Diagramms wird bei jeder neuen Suche auf einem weiteren Suchergebnis platziert
                 neuesDiagramm.centerRect(coord[counter]);
-                neuesDiagramm.scale = 0.9;
-
-
-
-                // search four different data properties for the string, any of which may match for success
-                // create a case insensitive RegExp from what the user typed
-
-                //console.log("counter " + counter + " coord length: " + wiederholKoordinaten.length);
-
+                neuesDiagramm.scale = 0.6;
                 coord = wiederholKoordinaten;
                 counter++;
 
@@ -2467,127 +2382,110 @@ function linkDoubleClick(e, obj) {
 
     //Eine Funktion um Knoten in den Viewport zu bekommen
 function zentrierAlles(e,obj){
-               neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x+0,e.documentPoint.y+100, 0,0));
-               console.log(obj.part.data.info);
-               neuesDiagramm.scale=0.8;
+               e.diagram.commit(function(d) {
+                console.log(obj.part.data.category);
+                   if(obj.part.data.category == "answertemplate"){
+                       neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x, e.documentPoint.y+700,0,0 ));
+                    console.log("sonderfall");
+                   neuesDiagramm.scale = 0.6;
+                   e.diagram.background = "#f50f13";
 
+                   }
+                   else {neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x, e.documentPoint.y,0,0 ));
+
+                   neuesDiagramm.scale = 0.6;}
+
+               })
 }
 
-           function cEintrag(e,obj) {
-               if(obj) {
-                   console.log("wenigstens e  " + e.documentPoint.x);
-                   console.log("wenigstens e  " + e.targetObject.toString());
-                   console.log("function c eintrag hat : obj, umstaendlich: ");
-                   console.log(obj.panel);
-                   console.log(obj);
-                   neuesDiagramm.centerRect(new go.Rect(e.documentPoint.x+400,e.documentPoint.y, 0,200));
-                   console.log(neuesDiagramm.scale);
-                   neuesDiagramm.scale=1.1;
-                   console.log(obj.panel.measuredBounds);
-                   console.log(umstaendlich);
-                   if(umstaendlich > umstaendlichundalt && umstaendlichundalt){
-                        return obj.part.data.info[umstaendlichundalt.length].mehr.text}
-                   console.log(obj.part.data);
-                   umstaendlichundalt = umstaendlich;
-
-                   if(umstaendlich.length < 0) {
-                   return obj.part.data.info[umstaendlichundalt].mehr.text;}
-               }
-           else {
-                console.log("hier returnen wir nix " + e +"  num: "+ num);
-
-                return console.log("obj von c eintrag war nicht definiert");}}
-
-
-
+    //Beim Klick auf Fragentemplate kann das Textfeld ein- und ausgeblendet werden
 function frageEinAusblenden(e, obj) {
-
+        if (!obj.part.data.visible) {zentrierAlles(e,obj);}
                e.diagram.commit(function(d) {
                    neuesDiagramm.model.setDataProperty(obj.part.data, "visible", !obj.part.data.visible);
 
 
-               })};
+               })}
+
+//Wechselt zwischen den logischen Symbolen eines Logikknotens
+
+function logik( e,obj) {
+   var node = obj.part.data;
+   if(node.visand == true ) {
+       neuesDiagramm.startTransaction("Logikänderung");
+
+       neuesDiagramm.model.setDataProperty(node, "visand", false);
+       neuesDiagramm.model.setDataProperty(node, "visor", true);
+
+       neuesDiagramm.commitTransaction("Logikänderung");
+   }
+   else if (node.visor == true ){
+
+       neuesDiagramm.startTransaction("Logikänderung");
+
+       neuesDiagramm.model.setDataProperty(node, "visor", false);
+       neuesDiagramm.model.setDataProperty(node, "visimp", true);
+
+       neuesDiagramm.commitTransaction("Logikänderung");
+
+   }
+
+   else if (node.visimp == true ){
+
+       neuesDiagramm.startTransaction("Logikänderung");
+
+       neuesDiagramm.model.setDataProperty(node, "visimp", false);
+       neuesDiagramm.model.setDataProperty(node, "visiff", true);
+
+       neuesDiagramm.commitTransaction("Logikänderung");
+
+   }
 
 
-           function logik( e,obj) {
-               var node = obj.part.data;
-               if(node.visand == true ) {
-                   neuesDiagramm.startTransaction("Logikänderung");
+   else if (node.visiff == true ){
 
-                   neuesDiagramm.model.setDataProperty(node, "visand", false);
-                   neuesDiagramm.model.setDataProperty(node, "visor", true);
+       neuesDiagramm.startTransaction("Logikänderung");
 
-                   neuesDiagramm.commitTransaction("Logikänderung");
-               }
-               else if (node.visor == true ){
+       neuesDiagramm.model.setDataProperty(node, "visiff", false);
+       neuesDiagramm.model.setDataProperty(node, "vispim", true);
 
-                   neuesDiagramm.startTransaction("Logikänderung");
+       neuesDiagramm.commitTransaction("Logikänderung");
 
-                   neuesDiagramm.model.setDataProperty(node, "visor", false);
-                   neuesDiagramm.model.setDataProperty(node, "visimp", true);
+   }
 
-                   neuesDiagramm.commitTransaction("Logikänderung");
+                  else if (node.vispim == true ){
 
-               }
+       neuesDiagramm.startTransaction("Logikänderung");
 
-               else if (node.visimp == true ){
+       neuesDiagramm.model.setDataProperty(node, "vispim", false);
+       neuesDiagramm.model.setDataProperty(node, "visex", true);
 
-                   neuesDiagramm.startTransaction("Logikänderung");
+       neuesDiagramm.commitTransaction("Logikänderung");
 
-                   neuesDiagramm.model.setDataProperty(node, "visimp", false);
-                   neuesDiagramm.model.setDataProperty(node, "visiff", true);
+   }
+      else if (node.visex == true ){
 
-                   neuesDiagramm.commitTransaction("Logikänderung");
+       neuesDiagramm.startTransaction("Logikänderung");
 
-               }
+       neuesDiagramm.model.setDataProperty(node, "visex", false);
+       neuesDiagramm.model.setDataProperty(node, "visall", true);
 
+       neuesDiagramm.commitTransaction("Logikänderung");}
 
-               else if (node.visiff == true ){
+      else if (node.visall == true ){
 
-                   neuesDiagramm.startTransaction("Logikänderung");
+       neuesDiagramm.startTransaction("Logikänderung");
 
-                   neuesDiagramm.model.setDataProperty(node, "visiff", false);
-                   neuesDiagramm.model.setDataProperty(node, "vispim", true);
+       neuesDiagramm.model.setDataProperty(node, "visall", false);
+       neuesDiagramm.model.setDataProperty(node, "visand", true);
 
-                   neuesDiagramm.commitTransaction("Logikänderung");
+       neuesDiagramm.commitTransaction("Logikänderung");}
 
-               }
+}
 
-                              else if (node.vispim == true ){
-
-                   neuesDiagramm.startTransaction("Logikänderung");
-
-                   neuesDiagramm.model.setDataProperty(node, "vispim", false);
-                   neuesDiagramm.model.setDataProperty(node, "visex", true);
-
-                   neuesDiagramm.commitTransaction("Logikänderung");
-
-               }
-                  else if (node.visex == true ){
-
-                   neuesDiagramm.startTransaction("Logikänderung");
-
-                   neuesDiagramm.model.setDataProperty(node, "visex", false);
-                   neuesDiagramm.model.setDataProperty(node, "visall", true);
-
-                   neuesDiagramm.commitTransaction("Logikänderung");}
-
-                  else if (node.visall == true ){
-
-                   neuesDiagramm.startTransaction("Logikänderung");
-
-                   neuesDiagramm.model.setDataProperty(node, "visall", false);
-                   neuesDiagramm.model.setDataProperty(node, "visand", true);
-
-                   neuesDiagramm.commitTransaction("Logikänderung");}
-
-           }
-
+//Multifunktions-Funktion die hier für eine Titeländerung oder Autospeichern Daten "postet"
 
 function sendVerData(welche) {
-
-    //console.log('url is : ')
-    //Der einzige Weg zu einem Diagramm ist über /saved/DiagrammID außer bei der Erstellung
 
 
     if(welche == "modell") {
@@ -2622,54 +2520,81 @@ function sendVerData(welche) {
     }
 }
 
+
+//Erweitert das info-Array eines Knotens um einen Eigenschaftsblock
 function machNeuenUntereintrag(e, obj) {
 
-
                         node = obj.part;
-                        console.log("aktuelle info ist: ");
 
-                        console.log(node.data);
-                        //console.log(obj.part.data);
                         neuesDiagramm.model.startTransaction("neuer UBText");
                         if(node.data.info) {
                             let neuU = {
-                                text: 'Ein Eigenschaftsname',
+                                text: 'Eine Eigenschaft',
                                 mehr: ["Mehr"],
                                 c: node.data.info.length
                             };
 
-                            console.log("node.data.info[0]: ");
-                            console.log(typeof(node.data.info));
-
-
-                            let array_index = node.data.info.length;
-
-                            console.log(array_index);
-
-
-                            //let zwischen;
-                            let zwischen = node.data.info;
-
-
-                            //zwischen.push(neuU);
-
-                            let ez = Object.assign(zwischen, neuU);
-
-                            console.log("zwischen: ");
-                            console.log(zwischen);
-
                             neuesDiagramm.model.startTransaction("neuInfo");
 
                             neuesDiagramm.model.addArrayItem(node.data.info, neuU);
-                            console.log("der key  hier ist: ");
-                            console.log(node.data.key);
-                            console.log("neuer eintrag hier ist: ");
-                            console.log(neuU);
-                            //neuesDiagramm.model.add(node.data, "info", ez);
+
                             neuesDiagramm.commitTransaction("neuInfo");
-                            //neuesDiagramm.model.insertArrayItem(node.data.restInfo, node.data.restInfo.length, neu);
                             neuesDiagramm.model.commitTransaction("neuer UBText");
-                            console.log(obj.part.data.info);
+                        }
+
+                  }
+
+//Fügt ein Item in das Quellenarray von Textknoten ein
+function machNeueQuelle(e, obj) {
+
+                        node = obj.part;
+
+                        neuesDiagramm.model.startTransaction("neuer UBText");
+                        if(node.data.quellen) {
+
+                            neuesDiagramm.model.startTransaction("neuInfo");
+
+                            neuesDiagramm.model.addArrayItem(node.data.quellen, "Eine Quelle");
+
+                            neuesDiagramm.commitTransaction("neuInfo");
+                            neuesDiagramm.model.commitTransaction("neuer UBText");
+                        }
+
+                  }
+
+//Löscht das letzte Item eines Quellenarrays von Textknoten
+
+    function loeschLetzteQuelle(e, obj) {
+
+                        node = obj.part;
+
+                        neuesDiagramm.model.startTransaction("neuer UBText");
+                        if(node.data.quellen) {
+
+                            neuesDiagramm.model.startTransaction("neuInfo");
+
+                            neuesDiagramm.model.removeArrayItem(node.data.quellen, node.data.quellen.length-1);
+
+                            neuesDiagramm.commitTransaction("neuInfo");
+                            neuesDiagramm.model.commitTransaction("neuer UBText");
+                        }
+
+                  }
+//Löscht das letzte Item eines Infoarrays von Textknoten
+
+        function loeschUnter(e, obj) {
+
+                        node = obj.part;
+
+                        neuesDiagramm.model.startTransaction("neuer UBText");
+                        if(node.data.quellen) {
+
+                            neuesDiagramm.model.startTransaction("neuInfo");
+
+                            neuesDiagramm.model.removeArrayItem(node.data.info, node.data.info.length-1);
+
+                            neuesDiagramm.commitTransaction("neuInfo");
+                            neuesDiagramm.model.commitTransaction("neuer UBText");
                         }
 
                   }
