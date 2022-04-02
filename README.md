@@ -6,6 +6,8 @@ GoJS stürzte beim Einklappen von gruppierten Graphobjekten ab, wenn ein Binding
 Jetzt werden vor dem Minimieren alle Gruppenobjekte in eine "leere" Template gewechselt und beim Maximieren wieder in ihr altes Layout überführt - außerdem sind jetzt alle Objekte bis auf Gruppen mit Rechtsklick größenveränderlich.  
 
 Template + Static Folder von nutzlosen Überbleibseln befreit  
+
+https://www.youtube.com/watch?v=D_Y4p-FcWFQ Hier ist das Ganze in Aktion zu sehen
   
   
 Die aktuellen Abhängigkeiten sind:
